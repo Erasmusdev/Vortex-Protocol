@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bounty Board</title>
+    <link rel="stylesheet" href="./CSS/industrial.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<header class="navbar">
+    <div class="navbar-left">
+        <a href="index.html" class="logo">VORTEX BOUNTIES</a>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="#">INDUSTRIAL</a></li>
+                <li><a href="#">LOGISTICS</a></li>
+                <li><a href="#">SCIENCE</a></li>
+                <li><a href="#">DEFENSE</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="navbar-right">
+        <a href="https://discord.gg/DuWnazV4" class="icon-link"><img src="./Images/Discord.png" alt="Discord Icon"><span>DISCORD</span></a>
+        <a href="#" class="icon-link"><img src="./Images/Youtube.png" alt="YouTube Icon"><span>YOUTUBE</span></a>
+        <a href="https://www.twitch.tv/flockersdesign" class="icon-link"><img src="./Images/Twitch.png" alt="Twitch Icon"><span>TWITCH</span></a>
+    </div>
+</header>
+
+<!-- ===== PLAYER SETUP ===== -->
+<section style="padding:100px 20px; text-align:center;">
+    <div id="player-setup">
+        <h2>Enter your in-game player name:</h2>
+        <input type="text" id="playerName" placeholder="Player123">
+        <button id="savePlayer">Save</button>
+    </div>
+</section>
+
+<!-- ===== BOUNTY CARDS ===== -->
+<section id="bounty-section" style="display:none; padding: 20px;">
+    <h2 class="section-protocol-title">AVAILABLE BOUNTIES</h2>
+
+    <!-- Example Bounty Card -->
+    <div class="large-content-card">
+        <div class="card-header-icon">
+            <img src="./Images/Patches/Mining-Operation.png" alt="Bounty Icon" class="card-large-icon">
+            <h2>Cargo Escort 01</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-tagline">Protect the trade convoy through hazardous sectors.</p>
+            <p class="card-main-text">Ensure safe delivery of high-value cargo across contested space. Beware of pirate ambushes and hazardous routes.</p>
+            <button class="accept-bounty" data-bounty="Cargo Escort 01">Accept Bounty</button>
+        </div>
+    </div>
+
+    <div class="large-content-card">
+        <div class="card-header-icon">
+            <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
+            <h2>Mining Run 02</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-tagline">Extract rare minerals from contested asteroids.</p>
+            <p class="card-main-text">Deploy your crew and equipment to mine Quantanium and other volatile minerals while avoiding enemy interception.</p>
+            <button class="accept-bounty" data-bounty="Mining Run 02">Accept Bounty</button>
+        </div>
+    </div>
+</section>
+
+<script>
+// --- PLAYER NAME STORAGE ---
+const saveBtn = document.getElementById('savePlayer');
+const playerInput = document.getElementById('playerName');
+const bountySection = document.getElementById('bounty-section');
+
+saveBtn.addEventListener('click', () => {
+    const playerName = playerInput.value.trim();
+    if(!playerName) return alert("Enter a player name!");
+    localStorage.setItem('playerName', playerName);
+    document.getElementById('player-setup').style.display = 'none';
+    bountySection.style.display = 'block';
+});
+
+// --- MAKE WEBHOOK POST ---
+const webhookURL = 'https://hook.eu2.make.com/7g8vndwpe4xrluuyuflh93rckkl9r96p'; // YOUR WEBHOOK
+document.querySelectorAll('.accept-bounty').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const playerName = localStorage.getItem('playerName');
+        const bountyName = btn.dataset.bounty;
+        if(!playerName) return alert("No player name set!");
+        
+        fetch(webhookURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ player: playerName, bounty: bountyName })
+        })
+        .then(() => alert(`Bounty "${bountyName}" accepted!`))
+        .catch(err => console.error(err));
+    });
+});
+</script>
+
+</body>
+</html>
