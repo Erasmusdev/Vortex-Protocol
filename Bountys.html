@@ -9,7 +9,6 @@
 </head>
 <body>
 
-<!-- ===== NAVBAR ===== -->
 <header class="navbar">
     <div class="navbar-left">
         <a href="index.html" class="logo">VORTEX BOUNTIES</a>
@@ -30,7 +29,6 @@
     </div>
 </header>
 
-<!-- ===== PLAYER SETUP ===== -->
 <section style="padding:100px 20px; text-align:center;">
     <div id="player-setup">
         <h2>Enter your in-game player name:</h2>
@@ -39,18 +37,15 @@
     </div>
 </section>
 
-<!-- ===== BOUNTY CARDS ===== -->
 <section id="bounty-section" style="display:none; padding: 20px;">
     <h2 class="section-protocol-title">AVAILABLE BOUNTIES</h2>
 
-    <!-- Example Player Bounty Card -->
     <div class="large-content-card">
         <div class="card-header-icon">
             <img src="./Images/Patches/Mining-Operation.png" alt="Bounty Icon" class="card-large-icon">
-            <h2>Gendo_dk</h2> <!-- Target player -->
-        </div>
+            <h2>Gendo_dk</h2> </div>
         <div class="card-body">
-            <p class="card-tagline">Reward: 100.000 SCU</p>
+            <p class="card-tagline">Reward: 100.000 UEC</p>
             <p class="card-main-text">This user has killed multiple from our Org so now has a bounty.</p>
             <button class="accept-bounty" data-bounty="Gendo_dk">Accept Bounty</button>
         </div>
@@ -62,21 +57,21 @@
             <h2>Starfire_X</h2>
         </div>
         <div class="card-body">
-            <p class="card-tagline">Reward: 50.00 SCU</p>
+            <p class="card-tagline">Reward: 50.00 UEC</p>
             <p class="card-main-text">Caught raiding our supply routes multiple times.</p>
             <button class="accept-bounty" data-bounty="Starfire_X">Accept Bounty</button>
         </div>
     </div>
 
-        <div class="large-content-card">
+    <div class="large-content-card">
         <div class="card-header-icon">
             <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
             <h2>MrViking</h2>
         </div>
         <div class="card-body">
-            <p class="card-tagline">Reward: 1.000.000 SCU</p>
+            <p class="card-tagline">Reward: 1.000.000 UEC</p>
             <p class="card-main-text">Caught raiding our supply routes multiple times.</p>
-            <button class="accept-bounty" data-bounty="Starfire_X">Accept Bounty</button>
+            <button class="accept-bounty" data-bounty="MrViking">Accept Bounty</button>
         </div>
     </div>
 </section>
@@ -142,8 +137,6 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
     });
 });
 </script>
-
-
 
 </body>
 </html>
