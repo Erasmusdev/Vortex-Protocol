@@ -3,43 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Bounty Editor</title>
+    <style>
+        /* Optional basic styling for better admin experience */
+        body { font-family: sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        h1 { color: #cc0000; }
+        .alert { padding: 10px; margin-bottom: 15px; border-radius: 4px; }
+        .error { background-color: #fdd; border: 1px solid #f00; color: #f00; }
+        .success { background-color: #dfd; border: 1px solid #0f0; color: #070; }
+        .login-status { margin-bottom: 20px; font-weight: bold; }
+        button { padding: 10px 15px; cursor: pointer; }
+    </style>
 </head>
 <body>
     <h1>Admin Bounty Status Update</h1>
     <p>Use this tool to CANCEL or COMPLETE an accepted bounty.</p>
 
-    <form id="statusUpdateForm">
-        <label for="bountyId">Bounty Target ID (e.g., Gendo_dk):</label>
-        <input type="text" id="bountyId" required><br><br>
+    <div id="loginStatus" class="login-status"></div>
+    <button id="discordLoginBtn" style="display: none;">Login with Discord</button>
+    <button id="logoutBtn" style="display: none;">Logout</button>
+    
+    <div id="formContainer" style="display: none;">
+        <form id="statusUpdateForm">
+            <label for="bountyId">Bounty Target ID (e.g., Gendo_dk):</label>
+            <input type="text" id="bountyId" required><br><br>
 
-        <label for="newStatus">New Status:</label>
-        <select id="newStatus" required>
-            <option value="CANCELLED">CANCELLED (Bounty re-opens)</option>
-            <option value="COMPLETED">COMPLETED (Bounty re-opens)</option>
-            <option value="FAILED">FAILED (Bounty stays open, if needed)</option>
-        </select><br><br>
+            <label for="newStatus">New Status:</label>
+            <select id="newStatus" required>
+                <option value="CANCELLED">CANCELLED (Bounty re-opens)</option>
+                <option value="COMPLETED">COMPLETED (Bounty re-opens)</option>
+                <option value="FAILED">FAILED (Bounty stays open, if needed)</option>
+            </select><br><br>
 
-        <button type="submit">Update Bounty Status</button>
-    </form>
+            <button type="submit">Update Bounty Status</button>
+        </form>
+    </div>
 
     <script>
-        // REPLACE WITH YOUR NEW ADMIN WEBHOOK URL (from Step 2)
-        const ADMIN_WEBHOOK_URL = 'YOUR_NEW_ADMIN_WEBHOOK_URL_HERE'; 
+        // =========================================================================
+        // 🚨 1. REQUIRED CONFIGURATION (REPLACE THESE VALUES) 🚨
+        // =========================================================================
+        const ADMIN_WEBHOOK_URL = 'YOUR_NEW_ADMIN_WEBHOOK_URL_HERE'; // <<< From your Admin Make.com Scenario
+        const CLIENT_ID = '849658679774674994';               // <<< From Discord Developer Portal
+        const CLIENT_SECRET = 'hQxa2zlLmQgI_yaGnpxNMo6VSiYmi94w';       // <<< From Discord Developer Portal
+        const REDIRECT_URI = 'https://erasmusdev.github.io/Vortex-Protocol/admin.html';               // <<< Must match Discord Dev Portal (e.g., http://admin.yourdomain.com/editor.html)
+        // =========================================================================
 
+        const API_URL = 'https://discord.com/api/v10';
+        const OAUTH_URL = `${API_URL}/oauth2/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=identify`;
+
+        const DISCORD_ID_KEY = 'adminDiscordId';
+        const PLAYER_NAME_KEY = 'adminPlayerName';
+
+        const loginStatusDiv = document.getElementById('loginStatus');
+        const discordLoginBtn = document.getElementById('discordLoginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const formContainer = document.getElementById('formContainer');
+
+        // --- UI STATE MANAGEMENT ---
+        function updateUI(isLoggedIn, name) {
+            if (isLoggedIn) {
+                loginStatusDiv.className = 'alert success';
+                loginStatusDiv.textContent = `✅ Logged in as: ${name}. You can update bounties below.`;
+                discordLoginBtn.style.display = 'none';
+                logoutBtn.style.display = 'inline-block';
+                formContainer.style.display = 'block';
+            } else {
+                loginStatusDiv.className = 'alert error';
+                loginStatusDiv.textContent = '❌ Not logged in. Please log in with Discord to access the editor.';
+                discordLoginBtn.style.display = 'inline-block';
+                logoutBtn.style.display = 'none';
+                formContainer.style.display = 'none';
+            }
+        }
+
+        // --- DISCORD OAUTH LOGIC ---
+        discordLoginBtn.addEventListener('click', () => {
+            window.location.href = OAUTH_URL;
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem(DISCORD_ID_KEY);
+            sessionStorage.removeItem(PLAYER_NAME_KEY);
+            window.history.replaceState({}, document.title, REDIRECT_URI);
+            updateUI(false);
+        });
+
+        async function processLogin() {
+            const storedId = sessionStorage.getItem(DISCORD_ID_KEY);
+            const storedName = sessionStorage.getItem(PLAYER_NAME_KEY);
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get('code');
+
+            if (storedId) {
+                // User is logged in
+                updateUI(true, storedName);
+                return;
+            }
+
+            if (code) {
+                // Exchange code for token (this requires the CLIENT_SECRET)
+                try {
+                    const tokenResponse = await fetch(`${API_URL}/oauth2/token`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({
+                            client_id: CLIENT_ID,
+                            client_secret: CLIENT_SECRET,
+                            grant_type: 'authorization_code',
+                            code: code,
+                            redirect_uri: REDIRECT_URI
+                        })
+                    });
+                    const tokenData = await tokenResponse.json();
+
+                    if (tokenData.access_token) {
+                        const userResponse = await fetch(`${API_URL}/users/@me`, {
+                            headers: { 'Authorization': `Bearer ${tokenData.access_token}` }
+                        });
+                        const userData = await userResponse.json();
+
+                        if (userData.id) {
+                            const name = userData.global_name || userData.username;
+                            sessionStorage.setItem(PLAYER_NAME_KEY, name);
+                            sessionStorage.setItem(DISCORD_ID_KEY, userData.id);
+
+                            // Clean the URL and refresh UI state
+                            window.history.replaceState({}, document.title, REDIRECT_URI);
+                            updateUI(true, name);
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.error("Login Error:", error);
+                    alert("Authentication failed. Check Client ID/Secret.");
+                }
+            }
+
+            updateUI(false);
+        }
+
+        // --- FORM SUBMISSION LOGIC ---
         document.getElementById('statusUpdateForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            const adminId = sessionStorage.getItem(DISCORD_ID_KEY);
+            if (!adminId) {
+                return alert("You must be logged in to submit this form.");
+            }
 
             const bountyId = document.getElementById('bountyId').value.trim();
             const newStatus = document.getElementById('newStatus').value;
 
-            if (!bountyId) {
-                alert("Please enter a Bounty Target ID.");
-                return;
-            }
-
             const payload = {
                 bounty: bountyId,
-                status: newStatus 
+                status: newStatus,
+                adminId: adminId // <<< Send the verified Discord ID
             };
 
             try {
@@ -49,17 +167,22 @@
                     body: JSON.stringify(payload)
                 });
 
+                // This check assumes Make.com will return an HTTP 200/202 if the filter PASSES
+                // and might return a 400 if the filter FAILS (which can be hard to control).
                 if (response.ok) {
-                    alert(`Bounty ${bountyId} status successfully updated to ${newStatus}. The bounty board will refresh shortly.`);
-                    // The main board refreshes, making the button clickable again!
+                    alert(`Bounty ${bountyId} status successfully updated to ${newStatus}.`);
                 } else {
-                    alert("Error updating status. Check the Make.com logs.");
+                    // This is where a failed Make.com filter often ends up.
+                    alert("Error updating status. Access Denied (Whitelist check failed) or Webhook Issue.");
                 }
             } catch (error) {
                 console.error("Fetch error:", error);
                 alert("Network error. Could not connect to the update service.");
             }
         });
+
+        // Initialize the login check on page load
+        processLogin();
     </script>
 </body>
 </html>
