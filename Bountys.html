@@ -115,6 +115,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     async function applyGlobalStatus() {
         const acceptedBountiesMap = {}; 
         
+        // Regex to split CSV, correctly handling commas inside quoted fields (common issue with Google Sheets CSV export)
+        const CSV_SPLIT_REGEX = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/; 
+
         try {
             const response = await fetch(CSV_DATA_URL);
             const csvText = await response.text();
@@ -122,30 +125,40 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const lines = csvText.trim().split('\n');
             if (lines.length <= 1) return;
 
-            // Get headers to find column indices dynamically
-            const headers = lines[0].split(',').map(h => h.trim());
+            // Helper function to clean a field (removes surrounding quotes and trims)
+            const cleanField = field => field.replace(/^"|"$/g, '').trim();
+
+            // 1. Get headers to find column indices dynamically
+            const headers = lines[0].split(CSV_SPLIT_REGEX).map(cleanField);
             const bountyIdIndex = headers.indexOf('Bounty_ID');
             const statusIndex = headers.indexOf('Status'); 
+            
+            if (bountyIdIndex === -1 || statusIndex === -1) {
+                console.warn("CSV headers (Bounty_ID or Status) were not found. Check sheet headers and publishing.");
+                return;
+            }
 
-            // Iterate over data rows
+            // 2. Iterate over data rows
             for (let i = 1; i < lines.length; i++) {
-                const columns = lines[i].split(',');
-                const bountyId = columns[bountyIdIndex] ? columns[bountyIdIndex].trim() : '';
-                const status = columns[statusIndex] ? columns[statusIndex].trim() : '';
+                const columns = lines[i].split(CSV_SPLIT_REGEX);
+                
+                // Clean and extract the relevant fields
+                const bountyId = columns[bountyIdIndex] ? cleanField(columns[bountyIdIndex]) : '';
+                const status = columns[statusIndex] ? cleanField(columns[statusIndex]) : '';
 
                 if (bountyId) {
-                    // Logic: ONLY disable the button if the Status column is explicitly 'ACCEPTED'
-                    if (status === 'ACCEPTED' || (!status && columns.length > 1)) { 
+                    // Logic: Disable the button only if the Status is explicitly 'ACCEPTED'
+                    if (status === 'ACCEPTED') { 
                         acceptedBountiesMap[bountyId] = true;
                     }
                 }
             }
 
         } catch (error) {
-            console.error("Failed to fetch global bounty list from Google Sheets.", error);
+            console.error("Failed to fetch or parse global bounty list from Google Sheets. Check Publish to Web settings.", error);
         }
 
-        // Apply UI state based on the retrieved bounties map
+        // 3. Apply UI state based on the retrieved bounties map
         document.querySelectorAll('.accept-bounty').forEach(btn => {
             const bountyCard = btn.closest('.large-content-card');
             const targetPlayerId = bountyCard.querySelector('h2').textContent.trim();
@@ -153,13 +166,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
             if (acceptedBountiesMap[targetPlayerId]) {
                 btn.disabled = true;
                 btn.textContent = "ACCEPTED";
-                // *** ADD THE GRAY-OUT CLASS ***
                 btn.classList.add('accepted-bounty-btn'); 
             } else {
-                // If not accepted (cleared or cancelled in sheet)
                 btn.disabled = false;
                 btn.textContent = "Accept Bounty"; 
-                // *** REMOVE THE GRAY-OUT CLASS ***
                 btn.classList.remove('accepted-bounty-btn'); 
             }
         });
@@ -214,13 +224,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
             // *** IMMEDIATE UI UPDATE ***
             btn.disabled = true; 
             btn.textContent = "ACCEPTED (Sending Signal)"; 
-            btn.classList.add('accepted-bounty-btn'); // Add gray-out class immediately
+            btn.classList.add('accepted-bounty-btn'); 
 
+            // Payload now includes the status field for Make.com mapping flexibility
             const payload = {
                 bounty: targetPlayer, 
                 player: acceptingPlayer,
                 reward: rewardText, 
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                status: "ACCEPTED" // New field for Make.com mapping
             };
 
             try {
@@ -234,6 +246,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     alert(`Bounty "${targetPlayer}" accepted! The global list will update shortly.`);
                     btn.textContent = "ACCEPTED (Confirming Global Status)"; 
                     
+                    // Re-run status check after a short delay
                     setTimeout(initializeBountyBoard, 4000); 
 
                 } else {
@@ -241,14 +254,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     alert("Failed to accept bounty. Check console for errors.");
                     btn.disabled = false;
                     btn.textContent = "Accept Bounty";
-                    btn.classList.remove('accepted-bounty-btn'); // Re-enable UI on failure
+                    btn.classList.remove('accepted-bounty-btn'); 
                 }
             } catch(err){
                 console.error(err);
                 alert("Error sending webhook. Check console for details.");
                 btn.disabled = false;
                 btn.textContent = "Accept Bounty";
-                btn.classList.remove('accepted-bounty-btn'); // Re-enable UI on error
+                btn.classList.remove('accepted-bounty-btn'); 
             }
         });
     });
