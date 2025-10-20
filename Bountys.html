@@ -95,8 +95,7 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
 
         const payload = { 
             player: playerName, 
-            bounty: bountyName,
-            timestamp: new Date().toISOString()  // optional, can help debugging in Make
+            bounty: bountyName
         };
 
         try {
@@ -108,7 +107,7 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
 
             if(response.ok) {
                 alert(`Bounty "${bountyName}" accepted!`);
-                btn.disabled = true; // prevent double submissions
+                btn.disabled = true;
                 btn.textContent = "Accepted";
             } else {
                 console.error("Webhook POST failed", response.status, response.statusText);
@@ -121,7 +120,6 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
     });
 });
 </script>
-
 
 </body>
 </html>
