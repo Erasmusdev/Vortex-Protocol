@@ -77,7 +77,7 @@ const bountySection = document.getElementById('bounty-section');
 
 saveBtn.addEventListener('click', () => {
     const playerName = playerInput.value.trim();
-    if (!playerName) return alert("Enter a player name!");
+    if(!playerName) return alert("Enter a player name!");
     localStorage.setItem('playerName', playerName);
     document.getElementById('player-setup').style.display = 'none';
     bountySection.style.display = 'block';
@@ -91,9 +91,9 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
         const playerName = localStorage.getItem('playerName');
         const bountyName = btn.dataset.bounty;
 
-        if (!playerName) return alert("No player name set!");
+        if(!playerName) return alert("No player name set!");
 
-        // --- Updated payload for Discord embed ---
+        // --- Payload formatted for Discord embed ---
         const payload = [
             {
                 title: "🎯 New Bounty Accepted!",
@@ -111,10 +111,10 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
             const response = await fetch(webhookURL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ embeds: payload }) // <--- Send under "embeds"
+                body: JSON.stringify({ embeds: payload }) // embeds array sent directly
             });
 
-            if (response.ok) {
+            if(response.ok){
                 alert(`Bounty "${bountyName}" accepted!`);
                 btn.disabled = true;
                 btn.textContent = "Accepted";
@@ -122,14 +122,13 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
                 console.error("Webhook POST failed", response.status, response.statusText);
                 alert("Failed to accept bounty. Check console for errors.");
             }
-        } catch (err) {
+        } catch(err){
             console.error(err);
             alert("Error sending webhook. Check console for details.");
         }
     });
 });
 </script>
-
 
 </body>
 </html>
