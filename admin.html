@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Bounty Editor</title>
+</head>
+<body>
+    <h1>Admin Bounty Status Update</h1>
+    <p>Use this tool to CANCEL or COMPLETE an accepted bounty.</p>
+
+    <form id="statusUpdateForm">
+        <label for="bountyId">Bounty Target ID (e.g., Gendo_dk):</label>
+        <input type="text" id="bountyId" required><br><br>
+
+        <label for="newStatus">New Status:</label>
+        <select id="newStatus" required>
+            <option value="CANCELLED">CANCELLED (Bounty re-opens)</option>
+            <option value="COMPLETED">COMPLETED (Bounty re-opens)</option>
+            <option value="FAILED">FAILED (Bounty stays open, if needed)</option>
+        </select><br><br>
+
+        <button type="submit">Update Bounty Status</button>
+    </form>
+
+    <script>
+        // REPLACE WITH YOUR NEW ADMIN WEBHOOK URL (from Step 2)
+        const ADMIN_WEBHOOK_URL = 'YOUR_NEW_ADMIN_WEBHOOK_URL_HERE'; 
+
+        document.getElementById('statusUpdateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const bountyId = document.getElementById('bountyId').value.trim();
+            const newStatus = document.getElementById('newStatus').value;
+
+            if (!bountyId) {
+                alert("Please enter a Bounty Target ID.");
+                return;
+            }
+
+            const payload = {
+                bounty: bountyId,
+                status: newStatus 
+            };
+
+            try {
+                const response = await fetch(ADMIN_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert(`Bounty ${bountyId} status successfully updated to ${newStatus}. The bounty board will refresh shortly.`);
+                    // The main board refreshes, making the button clickable again!
+                } else {
+                    alert("Error updating status. Check the Make.com logs.");
+                }
+            } catch (error) {
+                console.error("Fetch error:", error);
+                alert("Network error. Could not connect to the update service.");
+            }
+        });
+    </script>
+</body>
+</html>
