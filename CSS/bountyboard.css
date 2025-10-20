@@ -1,0 +1,286 @@
+/* =========================================
+   FUSION RESHADE — INDUSTRIAL DIVISION
+   Neon Green Forum Page • Updated Oct 2025
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap');
+
+:root {
+    --dark-bg: #0d0f11;
+    --text-color: #f0f0f0;
+    --accent-color: #00ff88; /* Primary Neon Green */
+    --secondary-accent: #ffffff;
+    --gray-text: #8e9498;
+    --navbar-bg: rgba(0, 0, 0, 0.8);
+    --card-border-color: rgba(255, 255, 255, 0.2);
+    --hazard-yellow: #ffcc00;
+
+    /* Division Colors for Card Borders */
+    --industrial-color: #ff9900; /* Orange/Gold for Industrial */
+    --logistics-color: #00bfff; /* Light Blue for Logistics */
+    --defense-color: #ff3333; /* Red for Defense */
+}
+
+/* --- GLOBAL --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Roboto', sans-serif;
+    background: var(--dark-bg);
+    color: var(--text-color);
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* --- Navbar (No changes needed, keeping original) --- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background-color: var(--navbar-bg);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.logo {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.2em;
+    color: var(--secondary-accent);
+    text-decoration: none;
+    margin-right: 30px;
+    letter-spacing: 2px;
+}
+.navbar-left nav ul {
+    list-style: none;
+    display: flex;
+}
+.navbar-left nav ul li {
+    margin-right: 25px;
+}
+.navbar-left nav ul li a {
+    color: var(--gray-text);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+.navbar-left nav ul li a:hover {
+    color: var(--accent-color);
+}
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+.icon-link {
+    display: flex;
+    align-items: center;
+    color: var(--gray-text);
+    text-decoration: none;
+    font-size: 0.85em;
+    letter-spacing: 1px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+.icon-link img {
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+    vertical-align: middle;
+    filter: drop-shadow(0 0 4px rgba(0, 255, 136, 0.6));
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+.icon-link:hover {
+    color: var(--accent-color);
+    transform: translateY(-2px);
+}
+.icon-link:hover img {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 8px rgba(0, 255, 136, 1));
+}
+
+/* --- SECTION TITLE --- */
+.section-protocol-title {
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.5em;
+    color: var(--secondary-accent);
+    margin: 50px 0 30px 0;
+    letter-spacing: 2px;
+}
+
+/* =========================================
+   PLAYER SETUP STYLING (NEW)
+   ========================================= */
+.player-setup-section {
+    padding: 150px 20px 80px 20px; /* More padding to clear the fixed navbar */
+    text-align: center;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,255,136,0.05) 100%);
+}
+.setup-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+}
+.setup-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.8em;
+    color: var(--accent-color);
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.input-group {
+    display: flex;
+    gap: 10px;
+}
+.styled-input {
+    flex-grow: 1;
+    padding: 12px 15px;
+    font-size: 1em;
+    font-family: 'Roboto', sans-serif;
+    color: var(--accent-color);
+    background-color: var(--dark-bg);
+    border: 2px solid var(--gray-text);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.styled-input::placeholder {
+    color: var(--gray-text);
+}
+.styled-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.8);
+}
+
+/* =========================================
+   BUTTON STYLING (Updated to be reusable)
+   ========================================= */
+.styled-button, .accept-bounty {
+    display: inline-block;
+    padding: 10px 18px;
+    border: 1px solid var(--accent-color);
+    background-color: var(--accent-color);
+    color: var(--dark-bg);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap; /* Prevents button text from wrapping */
+}
+.styled-button:hover, .accept-bounty:hover {
+    background-color: transparent;
+    color: var(--accent-color);
+    box-shadow: 0 0 10px var(--accent-color);
+}
+.accept-bounty:disabled {
+    cursor: not-allowed;
+    background-color: var(--gray-text);
+    border-color: var(--gray-text);
+    color: var(--dark-bg);
+    opacity: 0.6;
+    box-shadow: none;
+}
+.accept-bounty:disabled:hover {
+    background-color: var(--gray-text);
+    color: var(--dark-bg);
+    box-shadow: none;
+}
+
+/* =========================================
+   CONTENT CARDS (ENHANCED)
+   ========================================= */
+.large-content-card {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--card-border-color);
+    border-left: 15px solid var(--accent-color); /* Default border color */
+    margin: 0 auto 40px auto;
+    padding: 40px;
+    max-width: 900px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.large-content-card:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 25px rgba(0,255,136,0.4);
+}
+.large-content-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 15px; height: 100%;
+    /* Default hazard strip */
+    background: repeating-linear-gradient(
+        45deg,
+        var(--hazard-yellow),
+        var(--hazard-yellow) 8px,
+        transparent 8px,
+        transparent 16px
+    );
+    transition: background 0.3s ease;
+}
+
+/* Division-Specific Card Overrides (for visual variety) */
+
+/* Industrial Card (Orange/Gold) */
+.large-content-card.industrial { border-left-color: var(--industrial-color); }
+.large-content-card.industrial:hover { box-shadow: 0 0 25px rgba(255, 153, 0, 0.4); }
+.large-content-card.industrial .card-tagline { color: var(--industrial-color); }
+/* Logistics Card (Light Blue) */
+.large-content-card.logistics { border-left-color: var(--logistics-color); }
+.large-content-card.logistics:hover { box-shadow: 0 0 25px rgba(0, 191, 255, 0.4); }
+.large-content-card.logistics .card-tagline { color: var(--logistics-color); }
+/* Defense Card (Red) */
+.large-content-card.defense { border-left-color: var(--defense-color); }
+.large-content-card.defense:hover { box-shadow: 0 0 25px rgba(255, 51, 51, 0.4); }
+.large-content-card.defense .card-tagline { color: var(--defense-color); }
+
+
+.card-header-icon {
+    display: flex; align-items: center; gap: 20px;
+    margin-bottom: 20px;
+}
+.card-large-icon {
+    width: 70px; height: 70px;
+    /* Reduced shadow to be subtle, let the border/color do the work */
+    filter: drop-shadow(0 0 3px rgba(0,255,136,0.5)); 
+}
+.card-header-icon h2 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2em; /* Slightly larger heading */
+    color: var(--secondary-accent);
+    text-transform: uppercase;
+    letter-spacing: 3px; /* Tighter letter-spacing for better look */
+}
+.card-tagline {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1em;
+    color: var(--accent-color); /* Default to green if no class is set */
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+.card-main-text { line-height: 1.6; margin-bottom: 25px; } /* More vertical space */
+
+/* --- RESPONSIVE (Adjusted for the new setup section) --- */
+@media (max-width: 992px) {
+    /* No changes needed here */
+}
+@media (max-width: 768px) {
+    .navbar { flex-direction: column; gap: 10px; padding: 15px 20px; }
+    .navbar-left nav { display: none; }
+    .large-content-card { padding: 25px; }
+    .input-group { flex-direction: column; }
+    .styled-button { width: 100%; }
+}
+@media (max-width: 576px) {
+    .card-header-icon { flex-direction: column; align-items: flex-start; }
+    .card-large-icon { margin-bottom: 10px; }
+    .icon-link span { display: none; }
+}
