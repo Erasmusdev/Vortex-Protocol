@@ -43,28 +43,28 @@
 <section id="bounty-section" style="display:none; padding: 20px;">
     <h2 class="section-protocol-title">AVAILABLE BOUNTIES</h2>
 
-    <!-- Example Bounty Card -->
+    <!-- Example Player Bounty Card -->
     <div class="large-content-card">
         <div class="card-header-icon">
             <img src="./Images/Patches/Mining-Operation.png" alt="Bounty Icon" class="card-large-icon">
-            <h2>Cargo Escort 01</h2>
+            <h2>Gendo_dk</h2> <!-- Target player -->
         </div>
         <div class="card-body">
-            <p class="card-tagline">Protect the trade convoy through hazardous sectors.</p>
-            <p class="card-main-text">Ensure safe delivery of high-value cargo across contested space. Beware of pirate ambushes and hazardous routes.</p>
-            <button class="accept-bounty" data-bounty="Cargo Escort 01">Accept Bounty</button>
+            <p class="card-tagline">Reward: 1.00.00.00 SCU</p>
+            <p class="card-main-text">This user has killed multiple from our Org so now has a bounty.</p>
+            <button class="accept-bounty" data-bounty="Gendo_dk">Accept Bounty</button>
         </div>
     </div>
 
     <div class="large-content-card">
         <div class="card-header-icon">
             <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
-            <h2>Mining Run 02</h2>
+            <h2>Starfire_X</h2>
         </div>
         <div class="card-body">
-            <p class="card-tagline">Extract rare minerals from contested asteroids.</p>
-            <p class="card-main-text">Deploy your crew and equipment to mine Quantanium and other volatile minerals while avoiding enemy interception.</p>
-            <button class="accept-bounty" data-bounty="Mining Run 02">Accept Bounty</button>
+            <p class="card-tagline">Reward: 0.50.00.00 SCU</p>
+            <p class="card-main-text">Caught raiding our supply routes multiple times.</p>
+            <button class="accept-bounty" data-bounty="Starfire_X">Accept Bounty</button>
         </div>
     </div>
 </section>
@@ -88,16 +88,16 @@ const webhookURL = 'https://hook.eu2.make.com/y25idqg0rqvbj73jyt4udw7o71kal1b4';
 
 document.querySelectorAll('.accept-bounty').forEach(btn => {
     btn.addEventListener('click', async () => {
-        const playerName = localStorage.getItem('playerName');
-        const bountyName = btn.dataset.bounty;
+        const acceptingPlayer = localStorage.getItem('playerName'); // The player accepting the bounty
+        const targetPlayer = btn.dataset.bounty; // The player on the card
 
-        if(!playerName) return alert("No player name set!");
+        if(!acceptingPlayer) return alert("No player name set!");
 
-        // --- Payload formatted for Discord embed ---
+        // --- Updated payload for Discord embed ---
         const payload = [
             {
                 title: "🎯 New Bounty Accepted!",
-                description: `Player: ${playerName}\nBounty: ${bountyName}`,
+                description: `Player: ${acceptingPlayer}\nBounty: ${targetPlayer}`,
                 color: 65352,
                 footer: {
                     text: "Vortex Protocol Bounty Board",
@@ -111,11 +111,11 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
             const response = await fetch(webhookURL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ embeds: payload }) // embeds array sent directly
+                body: JSON.stringify({ embeds: payload }) // Discord expects array of objects
             });
 
             if(response.ok){
-                alert(`Bounty "${bountyName}" accepted!`);
+                alert(`Bounty "${targetPlayer}" accepted!`);
                 btn.disabled = true;
                 btn.textContent = "Accepted";
             } else {
