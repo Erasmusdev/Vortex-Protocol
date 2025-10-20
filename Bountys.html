@@ -50,7 +50,7 @@
             <h2>Gendo_dk</h2> <!-- Target player -->
         </div>
         <div class="card-body">
-            <p class="card-tagline">Reward: 1.00.00.00 SCU</p>
+            <p class="card-tagline">Reward: 100.000 SCU</p>
             <p class="card-main-text">This user has killed multiple from our Org so now has a bounty.</p>
             <button class="accept-bounty" data-bounty="Gendo_dk">Accept Bounty</button>
         </div>
@@ -62,7 +62,19 @@
             <h2>Starfire_X</h2>
         </div>
         <div class="card-body">
-            <p class="card-tagline">Reward: 0.50.00.00 SCU</p>
+            <p class="card-tagline">Reward: 50.00 SCU</p>
+            <p class="card-main-text">Caught raiding our supply routes multiple times.</p>
+            <button class="accept-bounty" data-bounty="Starfire_X">Accept Bounty</button>
+        </div>
+    </div>
+
+        <div class="large-content-card">
+        <div class="card-header-icon">
+            <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
+            <h2>MrViking</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-tagline">Reward: 1.000.000 SCU</p>
             <p class="card-main-text">Caught raiding our supply routes multiple times.</p>
             <button class="accept-bounty" data-bounty="Starfire_X">Accept Bounty</button>
         </div>
@@ -84,7 +96,7 @@ saveBtn.addEventListener('click', () => {
 });
 
 // --- MAKE WEBHOOK POST ---
-const webhookURL = 'https://hook.eu2.make.com/y25idqg0rqvbj73jyt4udw7o71kal1b4';
+const webhookURL = 'https://hook.eu2.make.com/y25idqg0rqvbj73jyt4udw7o71kal1b4'; // Keep your URL
 
 document.querySelectorAll('.accept-bounty').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -93,25 +105,20 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
 
         if(!acceptingPlayer) return alert("No player name set!");
 
-        // --- Updated payload for Discord embed ---
-        const payload = [
-            {
-                title: "🎯 New Bounty Accepted!",
-                description: `Player: ${acceptingPlayer}\nBounty: ${targetPlayer}`,
-                color: 65352,
-                footer: {
-                    text: "Vortex Protocol Bounty Board",
-                    icon_url: "https://erasmusdev.github.io/Vortex-Protocol/Images/Patches/DEFENSE-DIVISION.png"
-                },
-                timestamp: new Date().toISOString()
-            }
-        ];
+        // *** THIS IS THE CRITICAL CHANGE ***
+        // Send a simple JSON object with key-value pairs
+        const payload = {
+            acceptingPlayer: acceptingPlayer,
+            targetPlayer: targetPlayer,
+            timestamp: new Date().toISOString()
+        };
+        // **********************************
 
         try {
             const response = await fetch(webhookURL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ embeds: payload }) // Discord expects array of objects
+                body: JSON.stringify(payload) 
             });
 
             if(response.ok){
@@ -129,6 +136,8 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
     });
 });
 </script>
+
+
 
 </body>
 </html>
