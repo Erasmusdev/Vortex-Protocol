@@ -84,23 +84,44 @@ saveBtn.addEventListener('click', () => {
 });
 
 // --- MAKE WEBHOOK POST ---
-const webhookURL = 'https://hook.eu2.make.com/7g8vndwpe4xrluuyuflh93rckkl9r96p'; // YOUR WEBHOOK
+const webhookURL = 'https://hook.eu2.make.com/7g8vndwpe4xrluuyuflh93rckkl9r96p';
+
 document.querySelectorAll('.accept-bounty').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
         const playerName = localStorage.getItem('playerName');
         const bountyName = btn.dataset.bounty;
+
         if(!playerName) return alert("No player name set!");
-        
-        fetch(webhookURL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ player: playerName, bounty: bountyName })
-        })
-        .then(() => alert(`Bounty "${bountyName}" accepted!`))
-        .catch(err => console.error(err));
+
+        const payload = { 
+            player: playerName, 
+            bounty: bountyName,
+            timestamp: new Date().toISOString()  // optional, can help debugging in Make
+        };
+
+        try {
+            const response = await fetch(webhookURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if(response.ok) {
+                alert(`Bounty "${bountyName}" accepted!`);
+                btn.disabled = true; // prevent double submissions
+                btn.textContent = "Accepted";
+            } else {
+                console.error("Webhook POST failed", response.status, response.statusText);
+                alert("Failed to accept bounty. Check console for errors.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error sending webhook. Check console for details.");
+        }
     });
 });
 </script>
+
 
 </body>
 </html>
