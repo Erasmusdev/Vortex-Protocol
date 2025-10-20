@@ -94,8 +94,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', (event) => {
     // --- CONFIGURATION ---
-    // 1. **REPLACE THIS** with the CSV export URL from Google Sheets (File -> Publish to web -> CSV)
-    const CSV_DATA_URL = 'YOUR_GOOGLE_SHEETS_CSV_EXPORT_URL_HERE'; 
+    // 1. This is your sheet converted to the public CSV export URL.
+    const CSV_DATA_URL = 'https://docs.google.com/spreadsheets/d/11Z1mGOzrpVnKhNV-hnOIJmrWAGl5DeGLnEn5gMlsriE/gviz/tq?tqx=out:csv&gid=0'; 
     
     // 2. Your existing Make.com Webhook URL (Module 1)
     const webhookURL = 'https://hook.eu2.make.com/y25idqg0rqvbj73jyt4udw7o71kal1b4'; 
@@ -106,37 +106,56 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const bountySection = document.getElementById('bounty-section');
     const playerSetupSectionWrapper = document.getElementById('player-setup-section-wrapper'); 
     
+    const PLAYER_KEY = 'sessionPlayerName'; // Uses SESSION STORAGE (clears when the tab is closed)
+
     // ----------------------------------------------------
     // CHECK AND APPLY GLOBAL ACCEPTED STATUS (Via Google Sheets CSV)
     // ----------------------------------------------------
     async function applyGlobalStatus() {
-        let acceptedBounties = [];
+        const acceptedBountiesMap = {}; // Will store { "Bounty_ID": true } if the status is 'ACCEPTED'
         
         try {
-            // 1. Fetch the publicly exported CSV list from Google Sheets
             const response = await fetch(CSV_DATA_URL);
             const csvText = await response.text();
             
-            // 2. Parse the CSV text into an array of accepted Bounty IDs
-            acceptedBounties = csvText.trim().split('\n')
-                .slice(1) // Skip the header row ('Bounty_ID', 'Accepting_Player')
-                .map(line => line.split(',')[0].trim()); // Get the Bounty_ID (first column)
+            const lines = csvText.trim().split('\n');
+            if (lines.length <= 1) return; // Only headers, nothing to do.
+
+            // Get headers to find column indices dynamically
+            const headers = lines[0].split(',').map(h => h.trim());
+            const bountyIdIndex = headers.indexOf('Bounty_ID');
+            // 'Status' is the critical column for cancellation/re-enabling
+            const statusIndex = headers.indexOf('Status'); 
+
+            // Iterate over data rows
+            for (let i = 1; i < lines.length; i++) {
+                const columns = lines[i].split(',');
+                const bountyId = columns[bountyIdIndex] ? columns[bountyIdIndex].trim() : '';
+                const status = columns[statusIndex] ? columns[statusIndex].trim() : '';
+
+                if (bountyId) {
+                    // Logic: ONLY disable the button if the Status column is explicitly 'ACCEPTED'
+                    // If the bounty ID is present, we assume it's accepted unless marked otherwise.
+                    if (status === 'ACCEPTED' || (!status && columns.length > 1)) { 
+                        acceptedBountiesMap[bountyId] = true;
+                    }
+                }
+            }
 
         } catch (error) {
-            console.error("Failed to fetch global bounty list from Google Sheets.", error);
+            console.error("Failed to fetch global bounty list from Google Sheets. Ensure the sheet is published to the web as CSV.", error);
         }
 
-        // Apply UI state based on the retrieved bounties
+        // Apply UI state based on the retrieved bounties map
         document.querySelectorAll('.accept-bounty').forEach(btn => {
             const bountyCard = btn.closest('.large-content-card');
             const targetPlayerId = bountyCard.querySelector('h2').textContent.trim();
             
-            // Check if the acceptedBounties array includes the ID
-            if (acceptedBounties.includes(targetPlayerId)) {
+            if (acceptedBountiesMap[targetPlayerId]) {
                 btn.disabled = true;
                 btn.textContent = "ACCEPTED";
             } else {
-                // Ensure buttons are active if not accepted (resets local status)
+                // If status is CANCELLED/COMPLETED, or the row was deleted, the button is active.
                 btn.disabled = false;
                 btn.textContent = "Accept Bounty"; 
             }
@@ -144,18 +163,21 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     // ----------------------------------------------------
-    // INITIAL DATA FETCH AND PAGE LOAD LOGIC
+    // INITIAL DATA FETCH AND PLAYER SETUP LOGIC
     // ----------------------------------------------------
     async function initializeBountyBoard() {
         // Apply global status first
         await applyGlobalStatus();
 
-        // Visibility logic
-        const storedName = localStorage.getItem('playerName');
+        // Check for player name in SESSION STORAGE
+        const storedName = sessionStorage.getItem(PLAYER_KEY); 
+        
         if (storedName) {
+            // Player is identified, show the bounties
             playerSetupSectionWrapper.style.display = 'none'; 
             bountySection.style.display = 'block';
         } else {
+            // Player is not identified, show the input field
             playerSetupSectionWrapper.style.display = 'block';
             bountySection.style.display = 'none';
         }
@@ -168,7 +190,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     saveBtn.addEventListener('click', () => {
         const playerName = playerInput.value.trim();
         if(!playerName) return alert("Enter a player name!");
-        localStorage.setItem('playerName', playerName);
+        
+        // Saving to SESSION STORAGE
+        sessionStorage.setItem(PLAYER_KEY, playerName); 
         
         playerSetupSectionWrapper.style.display = 'none'; 
         bountySection.style.display = 'block';
@@ -178,25 +202,28 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // --- MAKE WEBHOOK POST (Accept Bounty) ---
     document.querySelectorAll('.accept-bounty').forEach(btn => {
         btn.addEventListener('click', async () => {
-            const acceptingPlayer = localStorage.getItem('playerName'); 
+            // Fetch name from SESSION STORAGE
+            const acceptingPlayer = sessionStorage.getItem(PLAYER_KEY); 
             const targetCard = btn.closest('.large-content-card'); 
-            const targetPlayer = targetCard.querySelector('h2').textContent.trim(); // Use the h2 text as the official ID
+            const targetPlayer = targetCard.querySelector('h2').textContent.trim(); 
 
-            if(!acceptingPlayer) return alert("No player name set!");
+            if(!acceptingPlayer) return alert("No player name set! Please identify yourself, pilot.");
 
-            // Local Check: Use the current state of the button/UI
+            // Final check on current button state
             if (btn.disabled) return alert(`Bounty "${targetPlayer}" is already accepted!`);
             
             const rewardElement = targetCard.querySelector('.card-tagline');
             const rewardText = rewardElement ? rewardElement.textContent.replace('Reward: ', '').trim() : 'N/A';
 
-            btn.disabled = true; // Disable immediately to prevent double-click
+            // *** IMMEDIATE UI UPDATE: Gray out the button ***
+            btn.disabled = true; 
+            btn.textContent = "ACCEPTED (Sending Signal)"; 
 
             const payload = {
-                // The Google Sheets columns expect these values
+                // These are the variables your Make.com Webhook expects
                 bounty: targetPlayer, 
                 player: acceptingPlayer,
-                reward: rewardText, // Sent for Discord clarity
+                reward: rewardText, 
                 timestamp: new Date().toISOString()
             };
 
@@ -210,20 +237,22 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
                 if(response.ok){
                     alert(`Bounty "${targetPlayer}" accepted! The global list will update shortly.`);
-                    btn.textContent = "ACCEPTED (Updating List)"; 
+                    btn.textContent = "ACCEPTED (Confirming Global Status)"; 
                     
-                    // Wait a few seconds for Make.com to write to Google Sheets, then re-check global status
+                    // Wait 4 seconds for Make.com to write to Google Sheets, then re-check global status
                     setTimeout(initializeBountyBoard, 4000); 
 
                 } else {
                     console.error("Webhook POST failed", response.status, response.statusText);
                     alert("Failed to accept bounty. Check console for errors.");
-                    btn.disabled = false;
+                    btn.disabled = false; // Re-enable button on failure
+                    btn.textContent = "Accept Bounty";
                 }
             } catch(err){
                 console.error(err);
                 alert("Error sending webhook. Check console for details.");
-                btn.disabled = false;
+                btn.disabled = false; // Re-enable button on error
+                btn.textContent = "Accept Bounty";
             }
         });
     });
