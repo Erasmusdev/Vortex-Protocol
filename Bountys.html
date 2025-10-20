@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bounty Board</title>
-    <link rel="stylesheet" href="./CSS/industrial.css">
+    <link rel="stylesheet" href="./CSS/bountyboard.css">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -29,49 +29,64 @@
     </div>
 </header>
 
-<section style="padding:100px 20px; text-align:center;">
-    <div id="player-setup">
-        <h2>Enter your in-game player name:</h2>
-        <input type="text" id="playerName" placeholder="Player123">
-        <button id="savePlayer">Save</button>
+<section class="player-setup-section">
+    <div id="player-setup" class="setup-container">
+        <h2 class="setup-title">IDENTIFY YOURSELF, PILOT</h2>
+        <div class="input-group">
+            <input type="text" id="playerName" placeholder="Enter your in-game handle..." class="styled-input">
+            <button id="savePlayer" class="styled-button">Secure Access</button>
+        </div>
     </div>
 </section>
 
 <section id="bounty-section" style="display:none; padding: 20px;">
     <h2 class="section-protocol-title">AVAILABLE BOUNTIES</h2>
 
-    <div class="large-content-card">
+    <div class="large-content-card industrial">
         <div class="card-header-icon">
             <img src="./Images/Patches/Mining-Operation.png" alt="Bounty Icon" class="card-large-icon">
-            <h2>Gendo_dk</h2> </div>
+            <h2>Gendo_dk</h2> 
+        </div>
         <div class="card-body">
             <p class="card-tagline">Reward: 100.000 UEC</p>
-            <p class="card-main-text">This user has killed multiple from our Org so now has a bounty.</p>
-            <button class="accept-bounty" data-bounty="Gendo_dk">Accept Bounty</button>
+            <p class="card-main-text">This user has killed multiple from our Org so now has a bounty. Target is active in the asteroid belt of Yela.</p>
+            <button class="accept-bounty styled-button" data-bounty="Gendo_dk">Accept Bounty</button>
         </div>
     </div>
 
-    <div class="large-content-card">
+    <div class="large-content-card logistics">
         <div class="card-header-icon">
             <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
             <h2>Starfire_X</h2>
         </div>
         <div class="card-body">
             <p class="card-tagline">Reward: 50.00 UEC</p>
-            <p class="card-main-text">Caught raiding our supply routes multiple times.</p>
-            <button class="accept-bounty" data-bounty="Starfire_X">Accept Bounty</button>
+            <p class="card-main-text">Caught raiding our supply routes multiple times. Last seen near Port Olisar.</p>
+            <button class="accept-bounty styled-button" data-bounty="Starfire_X">Accept Bounty</button>
         </div>
     </div>
 
-    <div class="large-content-card">
+    <div class="large-content-card defense">
         <div class="card-header-icon">
             <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
             <h2>MrViking</h2>
         </div>
         <div class="card-body">
             <p class="card-tagline">Reward: 1.000.000 UEC</p>
-            <p class="card-main-text">Caught raiding our supply routes multiple times.</p>
-            <button class="accept-bounty" data-bounty="MrViking">Accept Bounty</button>
+            <p class="card-main-text">High-value target. Caught raiding our supply routes multiple times. Current location unknown (RISK: HIGH).</p>
+            <button class="accept-bounty styled-button" data-bounty="MrViking">Accept Bounty</button>
+        </div>
+    </div>
+
+    <div class="large-content-card defense">
+        <div class="card-header-icon">
+            <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
+            <h2>Granden</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-tagline">Reward: 1.500.000 UEC</p>
+            <p class="card-main-text">High-value target. Caught raiding our supply routes multiple times. Current location unknown (RISK: HIGH).</p>
+            <button class="accept-bounty styled-button" data-bounty="MrViking">Accept Bounty</button>
         </div>
     </div>
 </section>
@@ -82,11 +97,18 @@ const saveBtn = document.getElementById('savePlayer');
 const playerInput = document.getElementById('playerName');
 const bountySection = document.getElementById('bounty-section');
 
+// Function to load player name on page load
+const storedName = localStorage.getItem('playerName');
+if (storedName) {
+    document.getElementById('player-setup').style.display = 'none';
+    bountySection.style.display = 'block';
+}
+
 saveBtn.addEventListener('click', () => {
     const playerName = playerInput.value.trim();
     if(!playerName) return alert("Enter a player name!");
     localStorage.setItem('playerName', playerName);
-    document.getElementById('player-setup').style.display = 'none';
+    document.getElementById('player-setup').closest('.player-setup-section').style.display = 'none'; // Hide the section
     bountySection.style.display = 'block';
 });
 
@@ -100,20 +122,16 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
 
         if(!acceptingPlayer) return alert("No player name set!");
 
-        // *** NEW CODE TO EXTRACT REWARD AND CURRENCY ***
-        const targetCard = btn.closest('.large-content-card'); // Find the closest parent card
+        const targetCard = btn.closest('.large-content-card'); 
         const rewardElement = targetCard.querySelector('.card-tagline');
-        // Extract text and clean it up (e.g., gets "100.000 UEC" from "Reward: 100.000 UEC")
         const rewardText = rewardElement ? rewardElement.textContent.replace('Reward: ', '').trim() : 'N/A';
 
-        // Update the payload to include the reward
         const payload = {
             acceptingPlayer: acceptingPlayer,
             targetPlayer: targetPlayer,
-            reward: rewardText, // e.g., "100.000 UEC"
+            reward: rewardText,
             timestamp: new Date().toISOString()
         };
-        // **********************************
 
         try {
             const response = await fetch(webhookURL, {
@@ -125,7 +143,7 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
             if(response.ok){
                 alert(`Bounty "${targetPlayer}" accepted! Reward: ${rewardText}`);
                 btn.disabled = true;
-                btn.textContent = "Accepted";
+                btn.textContent = "ACCEPTED"; // Use capitalized accepted text
             } else {
                 console.error("Webhook POST failed", response.status, response.statusText);
                 alert("Failed to accept bounty. Check console for errors.");
