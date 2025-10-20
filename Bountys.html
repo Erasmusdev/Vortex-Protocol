@@ -105,11 +105,17 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
 
         if(!acceptingPlayer) return alert("No player name set!");
 
-        // *** THIS IS THE CRITICAL CHANGE ***
-        // Send a simple JSON object with key-value pairs
+        // *** NEW CODE TO EXTRACT REWARD AND CURRENCY ***
+        const targetCard = btn.closest('.large-content-card'); // Find the closest parent card
+        const rewardElement = targetCard.querySelector('.card-tagline');
+        // Extract text and clean it up (e.g., gets "100.000 UEC" from "Reward: 100.000 UEC")
+        const rewardText = rewardElement ? rewardElement.textContent.replace('Reward: ', '').trim() : 'N/A';
+
+        // Update the payload to include the reward
         const payload = {
             acceptingPlayer: acceptingPlayer,
             targetPlayer: targetPlayer,
+            reward: rewardText, // e.g., "100.000 UEC"
             timestamp: new Date().toISOString()
         };
         // **********************************
@@ -122,7 +128,7 @@ document.querySelectorAll('.accept-bounty').forEach(btn => {
             });
 
             if(response.ok){
-                alert(`Bounty "${targetPlayer}" accepted!`);
+                alert(`Bounty "${targetPlayer}" accepted! Reward: ${rewardText}`);
                 btn.disabled = true;
                 btn.textContent = "Accepted";
             } else {
