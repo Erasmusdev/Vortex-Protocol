@@ -86,72 +86,133 @@
         <div class="card-body">
             <p class="card-tagline">Reward: 1.500.000 UEC</p>
             <p class="card-main-text">High-value target. Caught raiding our supply routes multiple times. Current location unknown (RISK: HIGH).</p>
-            <button class="accept-bounty styled-button" data-bounty="MrViking">Accept Bounty</button>
+            <button class="accept-bounty styled-button" data-bounty="Granden">Accept Bounty</button>
         </div>
     </div>
 </section>
 
 <script>
-// --- PLAYER NAME STORAGE ---
-const saveBtn = document.getElementById('savePlayer');
-const playerInput = document.getElementById('playerName');
-const bountySection = document.getElementById('bounty-section');
+document.addEventListener('DOMContentLoaded', (event) => {
+    // --- ELEMENT REFERENCES ---
+    const saveBtn = document.getElementById('savePlayer');
+    const playerInput = document.getElementById('playerName');
+    const bountySection = document.getElementById('bounty-section');
+    const playerSetupElement = document.getElementById('player-setup');
+    const playerSetupSectionWrapper = document.getElementById('player-setup-section-wrapper'); 
+    const acceptedBountiesKey = 'acceptedBounties'; 
 
-// Function to load player name on page load
-const storedName = localStorage.getItem('playerName');
-if (storedName) {
-    document.getElementById('player-setup').style.display = 'none';
-    bountySection.style.display = 'block';
-}
+    // ----------------------------------------------------
+    // 2. CHECK AND APPLY ACCEPTED STATUS TO BOUNTIES
+    // ----------------------------------------------------
+    function applyAcceptedStatus() {
+        const acceptedBounties = JSON.parse(localStorage.getItem(acceptedBountiesKey) || '{}');
 
-saveBtn.addEventListener('click', () => {
-    const playerName = playerInput.value.trim();
-    if(!playerName) return alert("Enter a player name!");
-    localStorage.setItem('playerName', playerName);
-    document.getElementById('player-setup').closest('.player-setup-section').style.display = 'none'; // Hide the section
-    bountySection.style.display = 'block';
-});
-
-// --- MAKE WEBHOOK POST ---
-const webhookURL = 'https://hook.eu2.make.com/y25idqg0rqvbj73jyt4udw7o71kal1b4'; // Keep your URL
-
-document.querySelectorAll('.accept-bounty').forEach(btn => {
-    btn.addEventListener('click', async () => {
-        const acceptingPlayer = localStorage.getItem('playerName'); // The player accepting the bounty
-        const targetPlayer = btn.dataset.bounty; // The player on the card
-
-        if(!acceptingPlayer) return alert("No player name set!");
-
-        const targetCard = btn.closest('.large-content-card'); 
-        const rewardElement = targetCard.querySelector('.card-tagline');
-        const rewardText = rewardElement ? rewardElement.textContent.replace('Reward: ', '').trim() : 'N/A';
-
-        const payload = {
-            acceptingPlayer: acceptingPlayer,
-            targetPlayer: targetPlayer,
-            reward: rewardText,
-            timestamp: new Date().toISOString()
-        };
-
-        try {
-            const response = await fetch(webhookURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload) 
-            });
-
-            if(response.ok){
-                alert(`Bounty "${targetPlayer}" accepted! Reward: ${rewardText}`);
+        document.querySelectorAll('.accept-bounty').forEach(btn => {
+            const targetPlayerId = btn.dataset.bounty;
+            
+            // If this bounty ID exists in our local storage record, disable the button
+            if (acceptedBounties[targetPlayerId]) {
                 btn.disabled = true;
-                btn.textContent = "ACCEPTED"; // Use capitalized accepted text
+                btn.textContent = "ACCEPTED";
             } else {
-                console.error("Webhook POST failed", response.status, response.statusText);
-                alert("Failed to accept bounty. Check console for errors.");
+                // Ensure buttons that are not accepted are re-enabled
+                btn.disabled = false;
+                btn.textContent = "Accept Bounty"; 
             }
-        } catch(err){
-            console.error(err);
-            alert("Error sending webhook. Check console for details.");
-        }
+        });
+    }
+
+    // ----------------------------------------------------
+    // 1. INITIAL PAGE LOAD LOGIC (Visibility and Status)
+    // ----------------------------------------------------
+    const storedName = localStorage.getItem('playerName');
+
+    if (storedName) {
+        playerSetupSectionWrapper.style.display = 'none'; 
+        bountySection.style.display = 'block';
+        applyAcceptedStatus(); // Run status check immediately
+    } else {
+        playerSetupSectionWrapper.style.display = 'block';
+        bountySection.style.display = 'none';
+    }
+
+
+    // --- SAVE BUTTON LISTENER ---
+    saveBtn.addEventListener('click', () => {
+        const playerName = playerInput.value.trim();
+        if(!playerName) return alert("Enter a player name!");
+        
+        localStorage.setItem('playerName', playerName);
+        
+        playerSetupSectionWrapper.style.display = 'none'; 
+        bountySection.style.display = 'block';
+
+        applyAcceptedStatus(); 
+    });
+
+
+    // --- MAKE WEBHOOK POST ---
+    const webhookURL = 'https://hook.eu2.make.com/y25idqg0rqvbj73jyt4udw7o71kal1b4'; 
+
+    document.querySelectorAll('.accept-bounty').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const acceptingPlayer = localStorage.getItem('playerName'); 
+            const targetPlayer = btn.dataset.bounty; 
+
+            if(!acceptingPlayer) return alert("No player name set!");
+
+            // Check immediately if this bounty is already accepted BEFORE sending webhook
+            const acceptedBounties = JSON.parse(localStorage.getItem(acceptedBountiesKey) || '{}');
+            if (acceptedBounties[targetPlayer]) {
+                 alert(`Bounty "${targetPlayer}" has already been accepted!`);
+                 btn.disabled = true; // Safety check
+                 btn.textContent = "ACCEPTED";
+                 return; // STOP EXECUTION
+            }
+            
+            const targetCard = btn.closest('.large-content-card'); 
+            const rewardElement = targetCard.querySelector('.card-tagline');
+            const rewardText = rewardElement ? rewardElement.textContent.replace('Reward: ', '').trim() : 'N/A';
+
+            // Disable button while waiting for webhook response
+            btn.disabled = true;
+
+            const payload = {
+                acceptingPlayer: acceptingPlayer,
+                targetPlayer: targetPlayer,
+                reward: rewardText,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload) 
+                });
+
+                if(response.ok){
+                    alert(`Bounty "${targetPlayer}" accepted! Reward: ${rewardText}`);
+                    
+                    // *** PERSIST THE ACCEPTED STATUS IN LOCAL STORAGE ***
+                    let updatedBounties = JSON.parse(localStorage.getItem(acceptedBountiesKey) || '{}');
+                    updatedBounties[targetPlayer] = acceptingPlayer;
+                    localStorage.setItem(acceptedBountiesKey, JSON.stringify(updatedBounties));
+                    
+                    // Final UI update
+                    btn.textContent = "ACCEPTED"; 
+
+                } else {
+                    console.error("Webhook POST failed", response.status, response.statusText);
+                    alert("Failed to accept bounty. Check console for errors.");
+                    btn.disabled = false; // Re-enable button on failure
+                }
+            } catch(err){
+                console.error(err);
+                alert("Error sending webhook. Check console for details.");
+                btn.disabled = false; // Re-enable button on error
+            }
+        });
     });
 });
 </script>
