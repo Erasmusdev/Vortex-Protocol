@@ -194,6 +194,40 @@ body {
 }
 
 /* =========================================
+   MISSION FILTER NAVBAR
+   ========================================= */
+.mission-filter-bar {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+.mission-filter-btn {
+    padding: 10px 20px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 2px solid var(--accent-color);
+    color: var(--accent-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.mission-filter-btn:hover {
+    background-color: var(--accent-color);
+    color: var(--dark-bg);
+    box-shadow: 0 0 15px var(--accent-color);
+}
+.mission-filter-btn.active {
+    background-color: var(--accent-color);
+    color: var(--dark-bg);
+    box-shadow: 0 0 20px var(--accent-color);
+}
+
+
+/* =========================================
    CONTENT CARDS (ENHANCED)
    ========================================= */
 .large-content-card {
