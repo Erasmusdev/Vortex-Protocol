@@ -41,15 +41,15 @@
 <section id="mission-section" style="display:none; padding:20px;">
   <h2 class="section-protocol-title">AVAILABLE MISSIONS</h2>
 
-  <label for="missionTypeFilter">Filter by Mission Type:</label>
-  <select id="missionTypeFilter" class="styled-input">
-    <option value="all">All</option>
-    <option value="bounty">Bounty</option>
-    <option value="mining">Mining</option>
-    <option value="salvage">Salvage</option>
-    <option value="exploration">Exploration</option>
-    <option value="resource">Resource Gathering</option>
-  </select>
+  <!-- NEW: Mission Filter Nav Bar -->
+  <div class="mission-filter-bar">
+    <button class="mission-filter-btn active" data-filter="all">All</button>
+    <button class="mission-filter-btn" data-filter="bounty">Bounty</button>
+    <button class="mission-filter-btn" data-filter="mining">Mining</button>
+    <button class="mission-filter-btn" data-filter="salvage">Salvage</button>
+    <button class="mission-filter-btn" data-filter="exploration">Exploration</button>
+    <button class="mission-filter-btn" data-filter="resource">Resource Gathering</button>
+  </div>
 
   <!-- Example mission cards -->
   <div class="large-content-card" data-mission-type="bounty">
@@ -100,6 +100,17 @@
     </div>
   </div>
 
+    <div class="large-content-card" data-mission-type="resource">
+    <div class="card-header-icon">
+      <img src="./Images/Patches/Exploration.png" alt="Exploration Icon" class="card-large-icon" />
+      <h2>Unknown Planet Scan</h2>
+    </div>
+    <div class="card-body">
+      <p class="card-tagline">Reward: 60.000 UEC</p>
+      <p class="card-main-text">Explore and scan the surface of an uncharted planet.</p>
+      <button class="accept-mission styled-button" data-mission="Unknown Planet Scan">Accept Mission</button>
+    </div>
+  </div>
 </section>
 
 <script>
@@ -113,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const playerNameInput = document.getElementById('playerNameInput');
   const missionSection = document.getElementById('mission-section');
   const playerSetupSectionWrapper = document.getElementById('player-setup-section-wrapper');
-  const missionFilter = document.getElementById('missionTypeFilter');
 
   async function applyGlobalStatus() {
     const missionStatusMap = {};
@@ -183,14 +193,21 @@ document.addEventListener('DOMContentLoaded', () => {
     missionSection.style.display = 'block';
   });
 
-  missionFilter.addEventListener('change', () => {
-    const selectedType = missionFilter.value;
-    document.querySelectorAll('.large-content-card').forEach(card => {
-      if (selectedType === 'all' || card.dataset.missionType === selectedType) {
-        card.style.display = 'block';
-      } else {
-        card.style.display = 'none';
-      }
+  // Mission filter buttons
+  document.querySelectorAll('.mission-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+
+      document.querySelectorAll('.mission-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.querySelectorAll('.large-content-card').forEach(card => {
+        if (filter === 'all' || card.dataset.missionType === filter) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
     });
   });
 
