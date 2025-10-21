@@ -1,288 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bounty Board</title>
-    <link rel="stylesheet" href="./CSS/bountyboard.css">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    
-    </head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bounty Board</title>
+    <link rel="stylesheet" href="./CSS/bountyboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    </head>
 <body>
 
 <header class="navbar">
-    <div class="navbar-left">
-        <a href="index.html" class="logo">VORTEX BOUNTIES</a>
-        <nav>
-            <ul>
-                <li><a href="index.html">HOME</a></li>
-                <li><a href="#">INDUSTRIAL</a></li>
-                <li><a href="#">LOGISTICS</a></li>
-                <li><a href="#">SCIENCE</a></li>
-                <li><a href="#">DEFENSE</a></li>
-            </ul>
-        </nav>
-    </div>
-    <div class="navbar-right">
-        <a href="https://discord.gg/DuWnazV4" class="icon-link"><img src="./Images/Discord.png" alt="Discord Icon"><span>DISCORD</span></a>
-        <a href="#" class="icon-link"><img src="./Images/Youtube.png" alt="YouTube Icon"><span>YOUTUBE</span></a>
-        <a href="https://www.twitch.tv/flockersdesign" class="icon-link"><img src="./Images/Twitch.png" alt="Twitch Icon"><span>TWITCH</span></a>
-    </div>
+    <div class="navbar-left">
+        <a href="index.html" class="logo">VORTEX BOUNTIES</a>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="#">INDUSTRIAL</a></li>
+                <li><a href="#">LOGISTICS</a></li>
+                <li><a href="#">SCIENCE</a></li>
+                <li><a href="#">DEFENSE</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="navbar-right">
+        <a href="https://discord.gg/DuWnazV4" class="icon-link"><img src="./Images/Discord.png" alt="Discord Icon"><span>DISCORD</span></a>
+        <a href="#" class="icon-link"><img src="./Images/Youtube.png" alt="YouTube Icon"><span>YOUTUBE</span></a>
+        <a href="https://www.twitch.tv/flockersdesign" class="icon-link"><img src="./Images/Twitch.png" alt="Twitch Icon"><span>TWITCH</span></a>
+    </div>
 </header>
 
 <section class="player-setup-section" id="player-setup-section-wrapper">
-    <div id="player-setup" class="setup-container">
-        <h2 class="setup-title">IDENTIFY YOURSELF, PILOT</h2>
-        <div class="input-group">
-            <input type="text" id="playerName" placeholder="Enter your in-game handle..." class="styled-input">
-            <button id="savePlayer" class="styled-button">Secure Access</button>
-        </div>
-    </div>
+    <div id="player-setup" class="setup-container">
+        <h2 class="setup-title">IDENTIFY YOURSELF, PILOT (Discord ID)</h2>
+        <div class="input-group">
+                        <input type="text" id="discordUserId" placeholder="Enter your Discord User ID..." class="styled-input">
+            <button id="savePlayer" class="styled-button">Secure Access</button>
+        </div>
+    </div>
 </section>
 
 <section id="bounty-section" style="display:none; padding: 20px;">
-    <h2 class="section-protocol-title">AVAILABLE BOUNTIES</h2>
+    <h2 class="section-protocol-title">AVAILABLE BOUNTIES</h2>
 
-    <div class="large-content-card industrial">
-        <div class="card-header-icon">
-            <img src="./Images/Patches/Mining-Operation.png" alt="Bounty Icon" class="card-large-icon">
-            <h2>Gendo_dk</h2> 
-        </div>
-        <div class="card-body">
-            <p class="card-tagline">Reward: 100.000 UEC</p>
-            <p class="card-main-text">This user has killed multiple from our Org so now has a bounty. Target is active in the asteroid belt of Yela.</p>
-            <button class="accept-bounty styled-button" data-bounty="Gendo_dk">Accept Bounty</button>
-        </div>
-    </div>
+    <div class="large-content-card industrial">
+        <div class="card-header-icon">
+            <img src="./Images/Patches/Mining-Operation.png" alt="Bounty Icon" class="card-large-icon">
+            <h2>Gendo_dk</h2> 
+        </div>
+        <div class="card-body">
+            <p class="card-tagline">Reward: 100.000 UEC</p>
+            <p class="card-main-text">This user has killed multiple from our Org so now has a bounty. Target is active in the asteroid belt of Yela.</p>
+            <button class="accept-bounty styled-button" data-bounty="Gendo_dk">Accept Bounty</button>
+        </div>
+    </div>
 
-    <div class="large-content-card logistics">
-        <div class="card-header-icon">
-            <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
-            <h2>Starfire_X</h2>
-        </div>
-        <div class="card-body">
-            <p class="card-tagline">Reward: 50.00 UEC</p>
-            <p class="card-main-text">Caught raiding our supply routes multiple times. Last seen near Port Olisar.</p>
-            <button class="accept-bounty styled-button" data-bounty="Starfire_X">Accept Bounty</button>
-        </div>
-    </div>
+    <div class="large-content-card logistics">
+        <div class="card-header-icon">
+            <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
+            <h2>Starfire_X</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-tagline">Reward: 50.00 UEC</p>
+            <p class="card-main-text">Caught raiding our supply routes multiple times. Last seen near Port Olisar.</p>
+            <button class="accept-bounty styled-button" data-bounty="Starfire_X">Accept Bounty</button>
+        </div>
+    </div>
 
-    <div class="large-content-card defense">
-        <div class="card-header-icon">
-            <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
-            <h2>MrViking</h2>
-        </div>
-        <div class="card-body">
-            <p class="card-tagline">Reward: 1.000.000 UEC</p>
-            <p class="card-main-text">High-value target. Caught raiding our supply routes multiple times. Current location unknown (RISK: HIGH).</p>
-            <button class="accept-bounty styled-button" data-bounty="MrViking">Accept Bounty</button>
-        </div>
-    </div>
+    <div class="large-content-card defense">
+        <div class="card-header-icon">
+            <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
+            <h2>MrViking</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-tagline">Reward: 1.000.000 UEC</p>
+            <p class="card-main-text">High-value target. Caught raiding our supply routes multiple times. Current location unknown (RISK: HIGH).</p>
+            <button class="accept-bounty styled-button" data-bounty="MrViking">Accept Bounty</button>
+        </div>
+    </div>
 
-    <div class="large-content-card defense">
-        <div class="card-header-icon">
-            <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
-            <h2>Granden</h2>
-        </div>
-        <div class="card-body">
-            <p class="card-tagline">Reward: 1.500.000 UEC</p>
-            <p class="card-main-text">High-value target. Caught raiding our supply routes multiple times. Current location unknown (RISK: HIGH).</p>
-            <button class="accept-bounty styled-button" data-bounty="Granden">Accept Bounty</button>
-        </div>
-    </div>
+    <div class="large-content-card defense">
+        <div class="card-header-icon">
+            <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon">
+            <h2>Granden</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-tagline">Reward: 1.500.000 UEC</p>
+            <p class="card-main-text">High-value target. Caught raiding our supply routes multiple times. Current location unknown (RISK: HIGH).</p>
+            <button class="accept-bounty styled-button" data-bounty="Granden">Accept Bounty</button>
+        </div>
+    </div>
 </section>
 
 <script>
 document.addEventListener('DOMContentLoaded', (event) => {
-    // --- CONFIGURATION ---
-    // 1. CSV Data URL from your Google Sheet
-    const CSV_DATA_URL = 'https://docs.google.com/spreadsheets/d/11Z1mGOzrpVnKhNV-hnOIJmrWAGl5DeGLnEn5gMlsriE/gviz/tq?tqx=out:csv&gid=0'; 
-    
-    // 2. Your existing Make.com Webhook URL (for ACCEPTING bounties)
-    const webhookURL = 'https://hook.eu2.make.com/y25idqg0rqvbj73jyt4udw7o71kal1b4'; 
+    // --- CONFIGURATION ---
+    // 1. CSV Data URL from your Google Sheet
+    const CSV_DATA_URL = 'https://docs.google.com/spreadsheets/d/11Z1mGOzrpVnKhNV-hnOIJmrWAGl5DeGLnEn5gMlsriE/gviz/tq?tqx=out:csv&gid=0'; 
+    
+    // 2. Your existing Make.com Webhook URL (for ACCEPTING bounties)
+    const webhookURL = 'https://hook.eu2.make.com/y25idqg0rqvbj73jyt4udw7o71kal1b4'; 
 
-    // --- ELEMENT REFERENCES ---
-    const saveBtn = document.getElementById('savePlayer');
-    const playerInput = document.getElementById('playerName');
-    const bountySection = document.getElementById('bounty-section');
-    const playerSetupSectionWrapper = document.getElementById('player-setup-section-wrapper'); 
-    
-    const PLAYER_KEY = 'sessionPlayerName'; 
+    // --- ELEMENT REFERENCES ---
+    const saveBtn = document.getElementById('savePlayer');
+    // RENAMED INPUT REFERENCE (Used for Discord ID)
+    const discordIdInput = document.getElementById('discordUserId'); 
+    
+    const bountySection = document.getElementById('bounty-section');
+    const playerSetupSectionWrapper = document.getElementById('player-setup-section-wrapper'); 
+    
+    // The key to store the whitelisting ID
+    const USER_ID_KEY = 'UserwhitelistId'; 
 
-    // ----------------------------------------------------
-    // CHECK AND APPLY GLOBAL ACCEPTED/CLOSED STATUS (Via Google Sheets CSV)
-    // ----------------------------------------------------
-    async function applyGlobalStatus() {
-        // Map to track the current status for EVERY bounty ID in the sheet.
-        // The last row processed for a given Bounty_ID will determine its final status.
-        const bountyStatusMap = {}; 
-        
-        // Regex to split CSV, correctly handling commas inside quoted fields
-        const CSV_SPLIT_REGEX = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/; 
+    // ----------------------------------------------------
+    // CHECK AND APPLY GLOBAL ACCEPTED/CLOSED STATUS (Via Google Sheets CSV)
+    // ----------------------------------------------------
+    async function applyGlobalStatus() {
+        const bountyStatusMap = {}; 
+        const CSV_SPLIT_REGEX = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/; 
 
-        try {
-            const response = await fetch(CSV_DATA_URL);
-            const csvText = await response.text();
-            
-            const lines = csvText.trim().split('\n');
-            if (lines.length <= 1) return;
+        try {
+            const response = await fetch(CSV_DATA_URL);
+            const csvText = await response.text();
+            
+            const lines = csvText.trim().split('\n');
+            if (lines.length <= 1) return;
 
-            const cleanField = field => field.replace(/^"|"$/g, '').trim();
+            const cleanField = field => field.replace(/^"|"$/g, '').trim();
 
-            const headers = lines[0].split(CSV_SPLIT_REGEX).map(cleanField);
-            const bountyIdIndex = headers.indexOf('Bounty_ID');
-            const statusIndex = headers.indexOf('Status'); 
-            
-            if (bountyIdIndex === -1 || statusIndex === -1) {
-                console.warn("CSV headers (Bounty_ID or Status) were not found. Check sheet headers and publishing.");
-                return;
-            }
+            const headers = lines[0].split(CSV_SPLIT_REGEX).map(cleanField);
+            const bountyIdIndex = headers.indexOf('Bounty_ID');
+            const statusIndex = headers.indexOf('Status'); 
+            
+            if (bountyIdIndex === -1 || statusIndex === -1) {
+                console.warn("CSV headers (Bounty_ID or Status) were not found. Check sheet headers and publishing.");
+                return;
+            }
 
-            // 1. Process all sheet rows to determine the LATEST status of each Bounty_ID.
-            // This loop ensures later entries overwrite earlier ones for the same Bounty_ID.
-            for (let i = 1; i < lines.length; i++) {
-                const columns = lines[i].split(CSV_SPLIT_REGEX);
-                
-                // Safety check for columns length
-                if (columns.length <= Math.max(bountyIdIndex, statusIndex)) continue; 
+            for (let i = 1; i < lines.length; i++) {
+                const columns = lines[i].split(CSV_SPLIT_REGEX);
+                
+                if (columns.length <= Math.max(bountyIdIndex, statusIndex)) continue; 
 
-                const bountyId = columns[bountyIdIndex] ? cleanField(columns[bountyIdIndex]) : '';
-                // Ensure status is upper-cased for reliable comparison
-                const status = columns[statusIndex] ? cleanField(columns[statusIndex]).toUpperCase() : '';
+                const bountyId = columns[bountyIdIndex] ? cleanField(columns[bountyIdIndex]) : '';
+                const status = columns[statusIndex] ? cleanField(columns[statusIndex]).toUpperCase() : '';
 
-                if (bountyId) {
-                    // CRITICAL FIX: Always store the status. The last row read wins.
-                    bountyStatusMap[bountyId] = status; 
-                }
-            }
+                if (bountyId) {
+                    bountyStatusMap[bountyId] = status; 
+                }
+            }
 
-        } catch (error) {
-            console.error("Failed to fetch or parse global bounty list from Google Sheets. Check Publish to Web settings.", error);
-        }
+        } catch (error) {
+            console.error("Failed to fetch or parse global bounty list from Google Sheets. Check Publish to Web settings.", error);
+        }
 
-        // 2. Apply UI state based on the calculated current status
-        document.querySelectorAll('.large-content-card').forEach(card => {
-            const targetPlayerId = card.querySelector('h2').textContent.trim();
-            const btn = card.querySelector('.accept-bounty');
-            
-            if (!btn) return; // Skip if card has no button
+        // 2. Apply UI state based on the calculated current status
+        document.querySelectorAll('.large-content-card').forEach(card => {
+            const targetPlayerId = card.querySelector('h2').textContent.trim();
+            const btn = card.querySelector('.accept-bounty');
+            
+            if (!btn) return;
 
-            // Get the status from the map. If not found, assume it's a NEW bounty
-            const status = bountyStatusMap[targetPlayerId] || 'NEW'; 
+            const status = bountyStatusMap[targetPlayerId] || 'NEW'; 
 
-            if (status === 'ACCEPTED') {
-                // BOUNTY IS CLAIMED - Disable button, keep card visible.
-                btn.disabled = true;
-                btn.textContent = "ACCEPTED";
-                btn.classList.add('accepted-bounty-btn'); 
-                card.style.display = 'block'; 
-            } 
-            else if (status === 'COMPLETED' || status === 'CANCELLED' || status === 'FAILED') {
-                // BOUNTY IS CLOSED BY ADMIN - Hide the card completely.
-                // This is the direct filter that removes the card from view.
-                card.style.display = 'none'; 
-            }
-            else { 
-                // BOUNTY IS NEW (or status is missing/unexpected) - Show and make clickable.
-                btn.disabled = false;
-                btn.textContent = "Accept Bounty"; 
-                btn.classList.remove('accepted-bounty-btn'); 
-                card.style.display = 'block';
-            }
-        });
-    }
+            if (status === 'ACCEPTED') {
+                btn.disabled = true;
+                btn.textContent = "ACCEPTED";
+                btn.classList.add('accepted-bounty-btn'); 
+                card.style.display = 'block'; 
+            } 
+            else if (status === 'COMPLETED' || status === 'CANCELLED' || status === 'FAILED') {
+                card.style.display = 'none'; 
+            }
+            else { 
+                btn.disabled = false;
+                btn.textContent = "Accept Bounty"; 
+                btn.classList.remove('accepted-bounty-btn'); 
+                card.style.display = 'block';
+            }
+        });
+    }
 
-    // ----------------------------------------------------
-    // INITIAL DATA FETCH AND PLAYER SETUP LOGIC
-    // ----------------------------------------------------
-    async function initializeBountyBoard() {
-        // Run the status check first to update button states and hide closed cards
-        await applyGlobalStatus();
+    // ----------------------------------------------------
+    // INITIAL DATA FETCH AND PLAYER SETUP LOGIC
+    // ----------------------------------------------------
+    async function initializeBountyBoard() {
+        await applyGlobalStatus();
 
-        const storedName = sessionStorage.getItem(PLAYER_KEY); 
-        
-        if (storedName) {
-            playerSetupSectionWrapper.style.display = 'none'; 
-            bountySection.style.display = 'block';
-        } else {
-            playerSetupSectionWrapper.style.display = 'block';
-            bountySection.style.display = 'none';
-        }
-    }
-    
-    // Initialize the board on DOM ready
-    initializeBountyBoard();
-    
-    // --- SAVE BUTTON LISTENER ---
-    saveBtn.addEventListener('click', () => {
-        const playerName = playerInput.value.trim();
-        if(!playerName) return alert("Enter a player name!");
-        
-        sessionStorage.setItem(PLAYER_KEY, playerName); 
-        
-        playerSetupSectionWrapper.style.display = 'none'; 
-        bountySection.style.display = 'block';
-    });
+        // CHECK FOR SAVED DISCORD ID (THE WHITELIST KEY)
+        const storedUserId = sessionStorage.getItem(USER_ID_KEY);
+        
+        if (storedUserId) {
+            playerSetupSectionWrapper.style.display = 'none'; 
+            bountySection.style.display = 'block';
+        } else {
+            playerSetupSectionWrapper.style.display = 'block';
+            bountySection.style.display = 'none';
+        }
+    }
+    
+    initializeBountyBoard();
+    
+    // --- SAVE BUTTON LISTENER ---
+    saveBtn.addEventListener('click', () => {
+        // Get Discord ID
+        const userId = discordIdInput.value.trim();
+
+        // Validation: Discord ID is mandatory for security check
+        if(!userId) return alert("Discord User ID is required for Secure Access.");
+        
+        // Save to session storage
+        sessionStorage.setItem(USER_ID_KEY, userId); 
+        
+        playerSetupSectionWrapper.style.display = 'none'; 
+        bountySection.style.display = 'block';
+    });
 
 
-    // --- MAKE WEBHOOK POST (Accept Bounty) ---
-    document.querySelectorAll('.accept-bounty').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const acceptingPlayer = sessionStorage.getItem(PLAYER_KEY); 
-            const targetCard = btn.closest('.large-content-card'); 
-            const targetPlayer = targetCard.querySelector('h2').textContent.trim(); 
+    // --- MAKE WEBHOOK POST (Accept Bounty) ---
+    document.querySelectorAll('.accept-bounty').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            // FETCH STORED DISCORD ID
+            const acceptingUserId = sessionStorage.getItem(USER_ID_KEY); 
+            
+            const targetCard = btn.closest('.large-content-card'); 
+            const targetPlayer = targetCard.querySelector('h2').textContent.trim(); 
 
-            if(!acceptingPlayer) return alert("No player name set! Please identify yourself, pilot.");
+            if(!acceptingUserId) return alert("Session expired. Please re-enter your Discord User ID, pilot.");
 
-            if (btn.disabled) return alert(`Bounty "${targetPlayer}" is already accepted!`);
-            
-            const rewardElement = targetCard.querySelector('.card-tagline');
-            const rewardText = rewardElement ? rewardElement.textContent.replace('Reward: ', '').trim() : 'N/A';
+            if (btn.disabled) return alert(`Bounty "${targetPlayer}" is already accepted!`);
+            
+            const rewardElement = targetCard.querySelector('.card-tagline');
+            const rewardText = rewardElement ? rewardElement.textContent.replace('Reward: ', '').trim() : 'N/A';
 
-            // *** IMMEDIATE UI UPDATE ***
-            btn.disabled = true; 
-            btn.textContent = "ACCEPTED (Sending Signal)"; 
-            btn.classList.add('accepted-bounty-btn'); 
+            // *** IMMEDIATE UI UPDATE ***
+            btn.disabled = true; 
+            btn.textContent = "ACCEPTED (Sending Signal)"; 
+            btn.classList.add('accepted-bounty-btn'); 
 
-            // Payload now includes the status field for Make.com mapping flexibility
-            const payload = {
-                bounty: targetPlayer, 
-                player: acceptingPlayer,
-                reward: rewardText, 
-                timestamp: new Date().toISOString(),
-                status: "ACCEPTED" // New field for Make.com mapping
-            };
+            // Payload structure:
+            const payload = {
+                bounty: targetPlayer, 
+                // We use the Discord ID as the Player name for logging (B)
+                player: acceptingUserId, 
+                reward: rewardText, 
+                timestamp: new Date().toISOString(),
+                status: "ACCEPTED", 
+                // CRITICAL: This is the key for the Make.com whitelist check!
+                UserwhitelistId: acceptingUserId 
+            };
 
-            try {
-                const response = await fetch(webhookURL, { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload) 
-                });
+            try {
+                const response = await fetch(webhookURL, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload) 
+                });
 
-                if(response.ok){
-                    alert(`Bounty "${targetPlayer}" accepted! The global list will update shortly.`);
-                    btn.textContent = "ACCEPTED (Confirming Global Status)"; 
-                    
-                    // Re-run status check after a short delay
-                    setTimeout(initializeBountyBoard, 4000); 
+                if(response.ok){
+                    alert(`Bounty "${targetPlayer}" accepted! The global list will update shortly.`);
+                    btn.textContent = "ACCEPTED (Confirming Global Status)"; 
+                    
+                    setTimeout(initializeBountyBoard, 4000); 
 
-                } else {
-                    console.error("Webhook POST failed", response.status, response.statusText);
-                    alert("Failed to accept bounty. Check console for errors.");
-                    btn.disabled = false;
-                    btn.textContent = "Accept Bounty";
-                    btn.classList.remove('accepted-bounty-btn'); 
-                }
-            } catch(err){
-                console.error(err);
-                alert("Error sending webhook. Check console for details.");
-                btn.disabled = false;
-                btn.textContent = "Accept Bounty";
-                btn.classList.remove('accepted-bounty-btn'); 
-            }
-        });
-    });
+                } else {
+                    console.error("Webhook POST failed", response.status, response.statusText);
+                    alert("Failed to accept bounty. Check console for errors. Access might be restricted."); 
+                    btn.disabled = false;
+                    btn.textContent = "Accept Bounty";
+                    btn.classList.remove('accepted-bounty-btn'); 
+                }
+            } catch(err){
+                console.error(err);
+                alert("Error sending webhook. Check console for details.");
+                btn.disabled = false;
+                btn.textContent = "Accept Bounty";
+                btn.classList.remove('accepted-bounty-btn'); 
+            }
+        });
+    });
 });
 </script>
 
