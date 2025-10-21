@@ -110,12 +110,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const PLAYER_KEY = 'sessionPlayerName'; 
 
     // ----------------------------------------------------
-    // CHECK AND APPLY GLOBAL ACCEPTED STATUS (Via Google Sheets CSV)
+    // CHECK AND APPLY GLOBAL ACCEPTED/CLOSED STATUS (Via Google Sheets CSV)
     // ----------------------------------------------------
     async function applyGlobalStatus() {
-        // Map to track bounties that are currently ACTIVE (not Cancelled/Completed/Failed)
-        // Value will be the status itself (e.g., 'NEW', 'ACCEPTED')
-        const activeBountiesMap = {}; 
+        // Map to track the current status for EVERY bounty ID in the sheet.
+        // The last row processed for a given Bounty_ID will determine its final status.
+        const bountyStatusMap = {}; 
         
         // Regex to split CSV, correctly handling commas inside quoted fields
         const CSV_SPLIT_REGEX = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/; 
@@ -138,7 +138,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 return;
             }
 
-            // 1. Process all sheet rows to determine the LATEST status of each Bounty_ID
+            // 1. Process all sheet rows to determine the LATEST status of each Bounty_ID.
+            // This loop ensures later entries overwrite earlier ones for the same Bounty_ID.
             for (let i = 1; i < lines.length; i++) {
                 const columns = lines[i].split(CSV_SPLIT_REGEX);
                 
@@ -150,17 +151,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 const status = columns[statusIndex] ? cleanField(columns[statusIndex]).toUpperCase() : '';
 
                 if (bountyId) {
-                    // If a bounty is marked COMPLETED, CANCELLED, or FAILED, it's inactive/closed.
-                    if (status === 'COMPLETED' || status === 'CANCELLED' || status === 'FAILED') {
-                        // Remove from our active map—it's off the board now.
-                        delete activeBountiesMap[bountyId];
-                    } else if (status === 'ACCEPTED' || status === 'NEW') {
-                        // Any other status (ACCEPTED, NEW, etc.) means it's still 'active'
-                        // The latest entry for a Bounty_ID determines its status
-                        activeBountiesMap[bountyId] = status; 
-                    }
-                    // NOTE: If there are multiple rows for the same bountyId, this logic ensures 
-                    // the *last* status encountered in the sheet is the one that sticks.
+                    // CRITICAL FIX: Always store the status. The last row read wins.
+                    bountyStatusMap[bountyId] = status; 
                 }
             }
 
@@ -168,31 +160,34 @@ document.addEventListener('DOMContentLoaded', (event) => {
             console.error("Failed to fetch or parse global bounty list from Google Sheets. Check Publish to Web settings.", error);
         }
 
-        // 2. Apply UI state based on the calculated active bounties
+        // 2. Apply UI state based on the calculated current status
         document.querySelectorAll('.large-content-card').forEach(card => {
             const targetPlayerId = card.querySelector('h2').textContent.trim();
             const btn = card.querySelector('.accept-bounty');
             
             if (!btn) return; // Skip if card has no button
 
-            const status = activeBountiesMap[targetPlayerId];
+            // Get the status from the map. If not found, assume it's a NEW bounty
+            const status = bountyStatusMap[targetPlayerId] || 'NEW'; 
 
             if (status === 'ACCEPTED') {
-                // Bounty is accepted - disable the button
+                // BOUNTY IS CLAIMED - Disable button, keep card visible.
                 btn.disabled = true;
                 btn.textContent = "ACCEPTED";
                 btn.classList.add('accepted-bounty-btn'); 
-                card.style.display = 'block'; // Keep card visible but disabled (standard "claimed" view)
-            } else if (status === 'NEW' || status === undefined) { 
-                // Bounty is 'NEW' or is a hardcoded bounty not yet in the sheet - make it clickable
+                card.style.display = 'block'; 
+            } 
+            else if (status === 'COMPLETED' || status === 'CANCELLED' || status === 'FAILED') {
+                // BOUNTY IS CLOSED BY ADMIN - Hide the card completely.
+                // This is the direct filter that removes the card from view.
+                card.style.display = 'none'; 
+            }
+            else { 
+                // BOUNTY IS NEW (or status is missing/unexpected) - Show and make clickable.
                 btn.disabled = false;
                 btn.textContent = "Accept Bounty"; 
                 btn.classList.remove('accepted-bounty-btn'); 
-                card.style.display = 'block'; // Make the card visible
-            } else {
-                // Bounty was closed by the admin (COMPLETED, CANCELLED, FAILED), 
-                // and therefore removed from activeBountiesMap. Hide the card.
-                card.style.display = 'none'; 
+                card.style.display = 'block';
             }
         });
     }
