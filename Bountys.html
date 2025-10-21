@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // 1. CSV Data URL from your Google Sheet
     const CSV_DATA_URL = 'https://docs.google.com/spreadsheets/d/11Z1mGOzrpVnKhNV-hnOIJmrWAGl5DeGLnEn5gMlsriE/gviz/tq?tqx=out:csv&gid=0'; 
     
-    // 2. Your existing Make.com Webhook URL
+    // 2. Your existing Make.com Webhook URL (for ACCEPTING bounties)
     const webhookURL = 'https://hook.eu2.make.com/y25idqg0rqvbj73jyt4udw7o71kal1b4'; 
 
     // --- ELEMENT REFERENCES ---
@@ -113,9 +113,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // CHECK AND APPLY GLOBAL ACCEPTED STATUS (Via Google Sheets CSV)
     // ----------------------------------------------------
     async function applyGlobalStatus() {
-        const acceptedBountiesMap = {}; 
+        // Map to track bounties that are currently ACTIVE (not Cancelled/Completed/Failed)
+        // Value will be the status itself (e.g., 'NEW', 'ACCEPTED')
+        const activeBountiesMap = {}; 
         
-        // Regex to split CSV, correctly handling commas inside quoted fields (common issue with Google Sheets CSV export)
+        // Regex to split CSV, correctly handling commas inside quoted fields
         const CSV_SPLIT_REGEX = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/; 
 
         try {
@@ -125,10 +127,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const lines = csvText.trim().split('\n');
             if (lines.length <= 1) return;
 
-            // Helper function to clean a field (removes surrounding quotes and trims)
             const cleanField = field => field.replace(/^"|"$/g, '').trim();
 
-            // 1. Get headers to find column indices dynamically
             const headers = lines[0].split(CSV_SPLIT_REGEX).map(cleanField);
             const bountyIdIndex = headers.indexOf('Bounty_ID');
             const statusIndex = headers.indexOf('Status'); 
@@ -138,19 +138,29 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 return;
             }
 
-            // 2. Iterate over data rows
+            // 1. Process all sheet rows to determine the LATEST status of each Bounty_ID
             for (let i = 1; i < lines.length; i++) {
                 const columns = lines[i].split(CSV_SPLIT_REGEX);
                 
-                // Clean and extract the relevant fields
+                // Safety check for columns length
+                if (columns.length <= Math.max(bountyIdIndex, statusIndex)) continue; 
+
                 const bountyId = columns[bountyIdIndex] ? cleanField(columns[bountyIdIndex]) : '';
-                const status = columns[statusIndex] ? cleanField(columns[statusIndex]) : '';
+                // Ensure status is upper-cased for reliable comparison
+                const status = columns[statusIndex] ? cleanField(columns[statusIndex]).toUpperCase() : '';
 
                 if (bountyId) {
-                    // Logic: Disable the button only if the Status is explicitly 'ACCEPTED'
-                    if (status === 'ACCEPTED') { 
-                        acceptedBountiesMap[bountyId] = true;
+                    // If a bounty is marked COMPLETED, CANCELLED, or FAILED, it's inactive/closed.
+                    if (status === 'COMPLETED' || status === 'CANCELLED' || status === 'FAILED') {
+                        // Remove from our active map—it's off the board now.
+                        delete activeBountiesMap[bountyId];
+                    } else if (status === 'ACCEPTED' || status === 'NEW') {
+                        // Any other status (ACCEPTED, NEW, etc.) means it's still 'active'
+                        // The latest entry for a Bounty_ID determines its status
+                        activeBountiesMap[bountyId] = status; 
                     }
+                    // NOTE: If there are multiple rows for the same bountyId, this logic ensures 
+                    // the *last* status encountered in the sheet is the one that sticks.
                 }
             }
 
@@ -158,19 +168,31 @@ document.addEventListener('DOMContentLoaded', (event) => {
             console.error("Failed to fetch or parse global bounty list from Google Sheets. Check Publish to Web settings.", error);
         }
 
-        // 3. Apply UI state based on the retrieved bounties map
-        document.querySelectorAll('.accept-bounty').forEach(btn => {
-            const bountyCard = btn.closest('.large-content-card');
-            const targetPlayerId = bountyCard.querySelector('h2').textContent.trim();
+        // 2. Apply UI state based on the calculated active bounties
+        document.querySelectorAll('.large-content-card').forEach(card => {
+            const targetPlayerId = card.querySelector('h2').textContent.trim();
+            const btn = card.querySelector('.accept-bounty');
             
-            if (acceptedBountiesMap[targetPlayerId]) {
+            if (!btn) return; // Skip if card has no button
+
+            const status = activeBountiesMap[targetPlayerId];
+
+            if (status === 'ACCEPTED') {
+                // Bounty is accepted - disable the button
                 btn.disabled = true;
                 btn.textContent = "ACCEPTED";
                 btn.classList.add('accepted-bounty-btn'); 
-            } else {
+                card.style.display = 'block'; // Keep card visible but disabled (standard "claimed" view)
+            } else if (status === 'NEW' || status === undefined) { 
+                // Bounty is 'NEW' or is a hardcoded bounty not yet in the sheet - make it clickable
                 btn.disabled = false;
                 btn.textContent = "Accept Bounty"; 
                 btn.classList.remove('accepted-bounty-btn'); 
+                card.style.display = 'block'; // Make the card visible
+            } else {
+                // Bounty was closed by the admin (COMPLETED, CANCELLED, FAILED), 
+                // and therefore removed from activeBountiesMap. Hide the card.
+                card.style.display = 'none'; 
             }
         });
     }
@@ -179,6 +201,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // INITIAL DATA FETCH AND PLAYER SETUP LOGIC
     // ----------------------------------------------------
     async function initializeBountyBoard() {
+        // Run the status check first to update button states and hide closed cards
         await applyGlobalStatus();
 
         const storedName = sessionStorage.getItem(PLAYER_KEY); 
