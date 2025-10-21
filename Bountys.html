@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bounty Board</title>
+  <title>Mission Board</title>
   <link rel="stylesheet" href="./CSS/bountyboard.css" />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet" />
 </head>
 <body>
 <header class="navbar">
   <div class="navbar-left">
-    <a href="index.html" class="logo">VORTEX BOUNTIES</a>
+    <a href="index.html" class="logo">VORTEX MISSIONS</a>
     <nav>
       <ul>
         <li><a href="index.html">HOME</a></li>
@@ -38,56 +38,68 @@
   </div>
 </section>
 
-<section id="bounty-section" style="display:none; padding:20px;">
-  <h2 class="section-protocol-title">AVAILABLE BOUNTIES</h2>
+<section id="mission-section" style="display:none; padding:20px;">
+  <h2 class="section-protocol-title">AVAILABLE MISSIONS</h2>
 
-  <div class="large-content-card industrial">
-    <div class="card-header-icon">
-      <img src="./Images/Patches/Mining-Operation.png" alt="Bounty Icon" class="card-large-icon" />
-      <h2>Gendo_dk</h2>
-    </div>
-    <div class="card-body">
-      <p class="card-tagline">Reward: 100.000 UEC</p>
-      <p class="card-main-text">This user has killed multiple from our Org so now has a bounty. Target is active in the asteroid belt of Yela.</p>
-      <button class="accept-bounty styled-button" data-bounty="Gendo_dk">Accept Bounty</button>
-    </div>
-  </div>
+  <label for="missionTypeFilter">Filter by Mission Type:</label>
+  <select id="missionTypeFilter" class="styled-input">
+    <option value="all">All</option>
+    <option value="bounty">Bounty</option>
+    <option value="mining">Mining</option>
+    <option value="salvage">Salvage</option>
+    <option value="exploration">Exploration</option>
+    <option value="resource">Resource Gathering</option>
+  </select>
 
-  <div class="large-content-card logistics">
+  <!-- Example mission cards -->
+  <div class="large-content-card" data-mission-type="bounty">
     <div class="card-header-icon">
-      <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon" />
+      <img src="./Images/Patches/Salvage-recovery.png" alt="Mission Icon" class="card-large-icon" />
       <h2>Starfire_X</h2>
     </div>
     <div class="card-body">
-      <p class="card-tagline">Reward: 50.00 UEC</p>
-      <p class="card-main-text">Caught raiding our supply routes multiple times. Last seen near Port Olisar.</p>
-      <button class="accept-bounty styled-button" data-bounty="Starfire_X">Accept Bounty</button>
+      <p class="card-tagline">Reward: 50.000 UEC</p>
+      <p class="card-main-text">Caught raiding supply routes. Last seen near Port Olisar.</p>
+      <button class="accept-mission styled-button" data-mission="Starfire_X">Accept Mission</button>
     </div>
   </div>
 
-  <div class="large-content-card defense">
+  <div class="large-content-card" data-mission-type="mining">
     <div class="card-header-icon">
-      <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon" />
-      <h2>MrViking</h2>
+      <img src="./Images/Patches/Mining-Operation.png" alt="Mining Icon" class="card-large-icon" />
+      <h2>Asteroid Survey</h2>
     </div>
     <div class="card-body">
-      <p class="card-tagline">Reward: 1.000.000 UEC</p>
-      <p class="card-main-text">High-value target. Caught raiding our supply routes multiple times. Current location unknown (RISK: HIGH).</p>
-      <button class="accept-bounty styled-button" data-bounty="MrViking">Accept Bounty</button>
+      <p class="card-tagline">Reward: 25.000 UEC</p>
+      <p class="card-main-text">Collect minerals from the Yela asteroid belt.</p>
+      <button class="accept-mission styled-button" data-mission="Asteroid Survey">Accept Mission</button>
     </div>
   </div>
 
-  <div class="large-content-card defense">
+  <div class="large-content-card" data-mission-type="salvage">
     <div class="card-header-icon">
-      <img src="./Images/Patches/Salvage-recovery.png" alt="Bounty Icon" class="card-large-icon" />
-      <h2>Granden</h2>
+      <img src="./Images/Patches/Salvage-recovery.png" alt="Salvage Icon" class="card-large-icon" />
+      <h2>Derelict Wreck</h2>
     </div>
     <div class="card-body">
-      <p class="card-tagline">Reward: 1.500.000 UEC</p>
-      <p class="card-main-text">High-value target. Caught raiding our supply routes multiple times. Current location unknown (RISK: HIGH).</p>
-      <button class="accept-bounty styled-button" data-bounty="Granden">Accept Bounty</button>
+      <p class="card-tagline">Reward: 40.000 UEC</p>
+      <p class="card-main-text">Recover valuable items from a derelict ship near Hurston.</p>
+      <button class="accept-mission styled-button" data-mission="Derelict Wreck">Accept Mission</button>
     </div>
   </div>
+
+  <div class="large-content-card" data-mission-type="exploration">
+    <div class="card-header-icon">
+      <img src="./Images/Patches/Exploration.png" alt="Exploration Icon" class="card-large-icon" />
+      <h2>Unknown Planet Scan</h2>
+    </div>
+    <div class="card-body">
+      <p class="card-tagline">Reward: 60.000 UEC</p>
+      <p class="card-main-text">Explore and scan the surface of an uncharted planet.</p>
+      <button class="accept-mission styled-button" data-mission="Unknown Planet Scan">Accept Mission</button>
+    </div>
+  </div>
+
 </section>
 
 <script>
@@ -99,11 +111,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const saveBtn = document.getElementById('savePlayer');
   const playerNameInput = document.getElementById('playerNameInput');
-  const bountySection = document.getElementById('bounty-section');
+  const missionSection = document.getElementById('mission-section');
   const playerSetupSectionWrapper = document.getElementById('player-setup-section-wrapper');
+  const missionFilter = document.getElementById('missionTypeFilter');
 
   async function applyGlobalStatus() {
-    const bountyStatusMap = {};
+    const missionStatusMap = {};
     const CSV_SPLIT_REGEX = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/;
     try {
       const response = await fetch(CSV_DATA_URL);
@@ -113,117 +126,99 @@ document.addEventListener('DOMContentLoaded', () => {
       if (lines.length <= 1) return;
       const cleanField = field => field.replace(/^"|"$/g, '').trim();
       const headers = lines[0].split(CSV_SPLIT_REGEX).map(cleanField);
-      const bountyIdIndex = headers.indexOf('Bounty_ID');
+      const missionIdIndex = headers.indexOf('Bounty_ID');
       const statusIndex = headers.indexOf('Status');
-      if (bountyIdIndex === -1 || statusIndex === -1) return;
+      if (missionIdIndex === -1 || statusIndex === -1) return;
       for (let i = 1; i < lines.length; i++) {
         const columns = lines[i].split(CSV_SPLIT_REGEX);
-        if (columns.length <= Math.max(bountyIdIndex, statusIndex)) continue;
-        const bountyId = cleanField(columns[bountyIdIndex]);
+        if (columns.length <= Math.max(missionIdIndex, statusIndex)) continue;
+        const missionId = cleanField(columns[missionIdIndex]);
         const status = cleanField(columns[statusIndex]).toUpperCase();
-        if (bountyId) bountyStatusMap[bountyId] = status;
+        if (missionId) missionStatusMap[missionId] = status;
       }
     } catch (err) {
-      console.error('Failed to fetch bounty data', err);
+      console.error('Failed to fetch mission data', err);
       return;
     }
 
     document.querySelectorAll('.large-content-card').forEach(card => {
-      const targetPlayerId = card.querySelector('h2').textContent.trim();
-      const btn = card.querySelector('.accept-bounty');
+      const missionName = card.querySelector('h2').textContent.trim();
+      const btn = card.querySelector('.accept-mission');
       if (!btn) return;
-      const status = bountyStatusMap[targetPlayerId] || 'NEW';
+      const status = missionStatusMap[missionName] || 'NEW';
       if (status === 'ACCEPTED') {
         btn.disabled = true;
         btn.textContent = "ACCEPTED";
-        btn.classList.add('accepted-bounty-btn');
+        btn.classList.add('accepted-mission-btn');
       } else if (['COMPLETED','CANCELLED','FAILED'].includes(status)) {
         card.style.display = 'none';
       } else {
         btn.disabled = false;
-        btn.textContent = "Accept Bounty";
-        btn.classList.remove('accepted-bounty-btn');
+        btn.textContent = "Accept Mission";
+        btn.classList.remove('accepted-mission-btn');
         card.style.display = 'block';
       }
     });
   }
 
-  async function initializeBountyBoard() {
+  async function initializeMissionBoard() {
     await applyGlobalStatus();
     const storedPlayerName = sessionStorage.getItem(USER_NAME_KEY);
     if (storedPlayerName) {
       playerSetupSectionWrapper.style.display = 'none';
-      bountySection.style.display = 'block';
+      missionSection.style.display = 'block';
     } else {
       playerSetupSectionWrapper.style.display = 'block';
-      bountySection.style.display = 'none';
+      missionSection.style.display = 'none';
     }
   }
-  initializeBountyBoard();
+
+  initializeMissionBoard();
 
   saveBtn.addEventListener('click', () => {
     const playerName = playerNameInput.value.trim();
     if (!playerName) return alert("Your In-Game Name is required for Secure Access.");
     sessionStorage.setItem(USER_NAME_KEY, playerName);
     playerSetupSectionWrapper.style.display = 'none';
-    bountySection.style.display = 'block';
+    missionSection.style.display = 'block';
   });
 
-  // Helper that evaluates webhook response to determine if it's a DENY
-  function isDeniedResponse(response, bodyText, parsedJson) {
-    // 1) non-OK HTTP status
-    if (!response.ok && response.status !== 200) return true;
+  missionFilter.addEventListener('change', () => {
+    const selectedType = missionFilter.value;
+    document.querySelectorAll('.large-content-card').forEach(card => {
+      if (selectedType === 'all' || card.dataset.missionType === selectedType) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
 
-    // 2) JSON fields that indicate failure
-    if (parsedJson) {
-      // common patterns: { success: false }, { allowed: false }, { whitelisted: false }, { error: "..."}
-      if (parsedJson.success === false) return true;
-      if (parsedJson.allowed === false) return true;
-      if (parsedJson.whitelisted === false) return true;
-      if (typeof parsedJson.error === 'string' && parsedJson.error.length) return true;
-      if (typeof parsedJson.message === 'string' && /denied|not whitelisted|unauthor/i.test(parsedJson.message)) return true;
-      if (typeof parsedJson.status === 'string' && /denied|unauthor|forbidden/i.test(parsedJson.status)) return true;
-    }
-
-    // 3) fallback: raw text keyword checks
-    if (typeof bodyText === 'string') {
-      if (/denied|not whitelisted|not authorized|unauthorized|forbidden|access denied|not allowed/i.test(bodyText)) return true;
-      // some flows return plain "false" or "0" - treat them as denies
-      if (/^\s*(false|0)\s*$/i.test(bodyText)) return true;
-    }
-
-    // otherwise, treat as allowed
-    return false;
-  }
-
-  document.querySelectorAll('.accept-bounty').forEach(btn => {
+  document.querySelectorAll('.accept-mission').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const acceptingPlayerName = sessionStorage.getItem(USER_NAME_KEY);
-      const targetCard = btn.closest('.large-content-card');
-      const targetPlayer = targetCard.querySelector('h2').textContent.trim();
-      const rewardText = targetCard.querySelector('.card-tagline')?.textContent.replace('Reward: ', '').trim() || 'N/A';
+      const missionName = btn.dataset.mission;
+      const missionType = btn.closest('.large-content-card').dataset.missionType;
+      const playerName = sessionStorage.getItem(USER_NAME_KEY);
 
-      if (!acceptingPlayerName) {
-        alert("Session expired. Please re-enter your In-Game Name, pilot.");
+      if (!playerName) {
+        alert("Session expired. Please re-enter your In-Game Name.");
         playerSetupSectionWrapper.style.display = 'block';
-        bountySection.style.display = 'none';
+        missionSection.style.display = 'none';
         return;
       }
-      if (btn.disabled) return alert(`Bounty "${targetPlayer}" is already accepted!`);
+      if (btn.disabled) return alert(`Mission "${missionName}" is already accepted!`);
 
-      // set a neutral "sending" state (don't show accepted yet)
       btn.disabled = true;
       const prevText = btn.textContent;
       btn.textContent = "SENDING SIGNAL...";
-      btn.classList.add('sending-bounty-btn');
+      btn.classList.add('sending-mission-btn');
 
       const payload = {
-        bounty: targetPlayer,
-        player: acceptingPlayerName,
-        reward: rewardText,
+        mission: missionName,
+        type: missionType,
+        player: playerName,
         timestamp: new Date().toISOString(),
-        status: "ACCEPTED",
-        UserwhitelistId: acceptingPlayerName
+        status: "ACCEPTED"
       };
 
       try {
@@ -233,44 +228,33 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify(payload)
         });
 
-        // read text and try parse JSON
         const resultText = await response.text();
-        console.log("Webhook status:", response.status);
-        console.log("Webhook body:", resultText);
-
         let parsed = null;
-        try {
-          parsed = JSON.parse(resultText);
-        } catch (e) {
-          // not JSON, that's fine
-        }
+        try { parsed = JSON.parse(resultText); } catch(e){}
 
-        // robust denial detection
-        if (isDeniedResponse(response, resultText, parsed)) {
-          // Access denied -> revert UI, clear session, redirect
+        const denied = !response.ok || 
+          (parsed && (parsed.success === false || parsed.allowed === false || parsed.whitelisted === false)) ||
+          (/denied|unauthor|forbidden/i.test(resultText));
+
+        if (denied) {
           alert("ACCESS DENIED — You are not on the whitelist.");
           sessionStorage.removeItem(USER_NAME_KEY);
-          // optional: small delay so user sees the alert before redirecting
           window.location.href = REDIRECT_URL;
           return;
         }
 
-        // Success path: mark accepted and refresh status
         btn.textContent = "ACCEPTED (Awaiting Global Status)";
-        btn.classList.remove('sending-bounty-btn');
-        btn.classList.add('accepted-bounty-btn');
-        // optionally keep disabled; global status will update soon
-        setTimeout(initializeBountyBoard, 4000);
-        alert(`Bounty "${targetPlayer}" accepted!`);
-
-      } catch (err) {
-        console.error("Webhook error:", err);
-        alert("Error communicating with server. Please try again.");
-        // revert UI
+        btn.classList.remove('sending-mission-btn');
+        btn.classList.add('accepted-mission-btn');
+        setTimeout(initializeMissionBoard, 4000);
+        alert(`Mission "${missionName}" accepted!`);
+      } catch(err) {
+        console.error(err);
         btn.disabled = false;
-        btn.textContent = prevText || "Accept Bounty";
-        btn.classList.remove('sending-bounty-btn');
-        btn.classList.remove('accepted-bounty-btn');
+        btn.textContent = prevText || "Accept Mission";
+        btn.classList.remove('sending-mission-btn');
+        btn.classList.remove('accepted-mission-btn');
+        alert("Error communicating with server. Please try again.");
       }
     });
   });
