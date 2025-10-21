@@ -6,8 +6,7 @@
     <title>Bounty Board</title>
     <link rel="stylesheet" href="./CSS/bountyboard.css">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    
-    </head>
+</head>
 <body>
 
 <header class="navbar">
@@ -93,211 +92,138 @@
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', (event) => {
-    // --- CONFIGURATION ---
-    // 1. CSV Data URL from your Google Sheet
-    const CSV_DATA_URL = 'https://docs.google.com/spreadsheets/d/11Z1mGOzrpVnKhNV-hnOIJmrWAGl5DeGLnEn5gMlsriE/export?format=csv&gid=0'; 
-    
-    // 2. Your existing Make.com Webhook URL (for ACCEPTING bounties)
-    const webhookURL = 'https://hook.eu2.make.com/y25idqg0rqvbj73jyt4udw7o71kal1b4'; 
+document.addEventListener('DOMContentLoaded', () => {
+    const CSV_DATA_URL = 'https://docs.google.com/spreadsheets/d/11Z1mGOzrpVnKhNV-hnOIJmrWAGl5DeGLnEn5gMlsriE/export?format=csv&gid=0';
+    const webhookURL = 'https://hook.eu2.make.com/y25idqg0rqvbj73jyt4udw7o71kal1b4';
+    const USER_NAME_KEY = 'PlayerInGameName';
 
-    // --- ELEMENT REFERENCES ---
     const saveBtn = document.getElementById('savePlayer');
-    const playerNameInput = document.getElementById('playerNameInput'); 
+    const playerNameInput = document.getElementById('playerNameInput');
     const bountySection = document.getElementById('bounty-section');
-    const playerSetupSectionWrapper = document.getElementById('player-setup-section-wrapper'); 
-    
-    const USER_NAME_KEY = 'PlayerInGameName'; 
-    const CSV_SPLIT_REGEX = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/; 
+    const playerSetupSectionWrapper = document.getElementById('player-setup-section-wrapper');
 
-    // ----------------------------------------------------
-    // CHECK AND APPLY GLOBAL ACCEPTED/CLOSED STATUS (Via Google Sheets CSV)
-    // ----------------------------------------------------
     async function applyGlobalStatus() {
-        const bountyStatusMap = {}; 
-        const cleanField = field => field.replace(/^"|"$/g, '').trim();
+        const bountyStatusMap = {};
+        const CSV_SPLIT_REGEX = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/;
 
         try {
             const response = await fetch(CSV_DATA_URL);
-            
-            if (!response.ok) {
-                 throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             const csvText = await response.text();
-            
             const lines = csvText.trim().split('\n');
             if (lines.length <= 1) return;
 
+            const cleanField = field => field.replace(/^"|"$/g, '').trim();
             const headers = lines[0].split(CSV_SPLIT_REGEX).map(cleanField);
             const bountyIdIndex = headers.indexOf('Bounty_ID');
-            const statusIndex = headers.indexOf('Status'); 
-            
-            if (bountyIdIndex === -1 || statusIndex === -1) {
-                console.warn("CSV headers (Bounty_ID or Status) were not found.");
-                return;
-            }
+            const statusIndex = headers.indexOf('Status');
 
-            // Iterate ALL rows to find the LATEST status for each bounty
             for (let i = 1; i < lines.length; i++) {
                 const columns = lines[i].split(CSV_SPLIT_REGEX);
-                
-                if (columns.length <= Math.max(bountyIdIndex, statusIndex)) continue; 
-
                 const bountyId = columns[bountyIdIndex] ? cleanField(columns[bountyIdIndex]) : '';
                 const status = columns[statusIndex] ? cleanField(columns[statusIndex]).toUpperCase() : '';
-
-                if (bountyId) {
-                    // The last entry processed for this ID wins, giving the current status
-                    bountyStatusMap[bountyId] = status; 
-                }
+                if (bountyId) bountyStatusMap[bountyId] = status;
             }
-
         } catch (error) {
-            console.error("Failed to fetch or parse global bounty list from Google Sheets.", error);
+            console.error("Failed to fetch bounty data", error);
             return;
         }
 
-        // 2. Apply UI state based on the calculated current status
         document.querySelectorAll('.large-content-card').forEach(card => {
             const targetPlayerId = card.querySelector('h2').textContent.trim();
             const btn = card.querySelector('.accept-bounty');
-            
             if (!btn) return;
 
-            const status = bountyStatusMap[targetPlayerId] || 'NEW'; 
-
+            const status = bountyStatusMap[targetPlayerId] || 'NEW';
             if (status === 'ACCEPTED') {
-                // BOUNTY IS CLAIMED - Disable button and grey out
                 btn.disabled = true;
                 btn.textContent = "ACCEPTED";
-                btn.classList.add('accepted-bounty-btn'); 
-                card.style.display = 'block'; 
-            } 
-            else if (status === 'COMPLETED' || status === 'CANCELLED' || status === 'FAILED') {
-                // BOUNTY IS CLOSED - Hide the card completely
-                card.style.display = 'none'; 
-            }
-            else { 
-                // BOUNTY IS NEW - Show and make clickable
+                btn.classList.add('accepted-bounty-btn');
+            } else if (['COMPLETED', 'CANCELLED', 'FAILED'].includes(status)) {
+                card.style.display = 'none';
+            } else {
                 btn.disabled = false;
-                btn.textContent = "Accept Bounty"; 
-                btn.classList.remove('accepted-bounty-btn'); 
+                btn.textContent = "Accept Bounty";
+                btn.classList.remove('accepted-bounty-btn');
                 card.style.display = 'block';
             }
         });
     }
 
-    // ----------------------------------------------------
-    // INITIAL DATA FETCH AND PLAYER SETUP LOGIC
-    // ----------------------------------------------------
     async function initializeBountyBoard() {
         await applyGlobalStatus();
-
-        // CHECK FOR SAVED USERNAME
         const storedPlayerName = sessionStorage.getItem(USER_NAME_KEY);
-        
         if (storedPlayerName) {
-            playerSetupSectionWrapper.style.display = 'none'; 
+            playerSetupSectionWrapper.style.display = 'none';
             bountySection.style.display = 'block';
         } else {
             playerSetupSectionWrapper.style.display = 'block';
             bountySection.style.display = 'none';
         }
     }
-    
-    initializeBountyBoard();
-    
-    // --- SAVE BUTTON LISTENER (Logs user in and saves name to session) ---
-    saveBtn.addEventListener('click', () => {
-        // Get In-Game Name
-        const playerName = playerNameInput.value.trim(); 
 
-        // Validation
-        if(!playerName) return alert("Your In-Game Name is required for Secure Access.");
-        
-        // Save to session storage
-        sessionStorage.setItem(USER_NAME_KEY, playerName); 
-        
-        // Show the bounty board
-        playerSetupSectionWrapper.style.display = 'none'; 
+    initializeBountyBoard();
+
+    saveBtn.addEventListener('click', () => {
+        const playerName = playerNameInput.value.trim();
+        if (!playerName) return alert("Your In-Game Name is required for Secure Access.");
+        sessionStorage.setItem(USER_NAME_KEY, playerName);
+        playerSetupSectionWrapper.style.display = 'none';
         bountySection.style.display = 'block';
     });
 
-
-    // --- MAKE WEBHOOK POST (Accept Bounty) - UPDATED FOR ACCESS DENIAL ---
     document.querySelectorAll('.accept-bounty').forEach(btn => {
         btn.addEventListener('click', async () => {
-            // FETCH STORED IN-GAME NAME
-            const acceptingPlayerName = sessionStorage.getItem(USER_NAME_KEY); 
-            
-            const targetCard = btn.closest('.large-content-card'); 
-            const targetPlayer = targetCard.querySelector('h2').textContent.trim(); 
+            const acceptingPlayerName = sessionStorage.getItem(USER_NAME_KEY);
+            const targetCard = btn.closest('.large-content-card');
+            const targetPlayer = targetCard.querySelector('h2').textContent.trim();
+            const rewardText = targetCard.querySelector('.card-tagline')?.textContent.replace('Reward: ', '').trim() || 'N/A';
 
-            if(!acceptingPlayerName) {
+            if (!acceptingPlayerName) {
                 alert("Session expired. Please re-enter your In-Game Name, pilot.");
-                location.reload(); // Force login screen if session is lost
+                playerSetupSectionWrapper.style.display = 'block';
+                bountySection.style.display = 'none';
                 return;
             }
 
-            // Check if the button is already visually disabled before proceeding
             if (btn.disabled) return alert(`Bounty "${targetPlayer}" is already accepted!`);
-            
-            const rewardElement = targetCard.querySelector('.card-tagline');
-            const rewardText = rewardElement ? rewardElement.textContent.replace('Reward: ', '').trim() : 'N/A';
 
-            // *** IMMEDIATE UI UPDATE (Pre-signal) ***
-            btn.disabled = true; 
-            btn.textContent = "ACCEPTED (Sending Signal)"; 
-            btn.classList.add('accepted-bounty-btn'); 
+            btn.disabled = true;
+            btn.textContent = "ACCEPTED (Sending Signal)";
+            btn.classList.add('accepted-bounty-btn');
 
-            // Payload structure:
             const payload = {
-                bounty: targetPlayer, 
-                player: acceptingPlayerName, 
-                reward: rewardText, 
+                bounty: targetPlayer,
+                player: acceptingPlayerName,
+                reward: rewardText,
                 timestamp: new Date().toISOString(),
-                status: "ACCEPTED", 
-                // CRITICAL: This variable is used for your Make.com Whitelist check
-                UserwhitelistId: acceptingPlayerName 
+                status: "ACCEPTED",
+                UserwhitelistId: acceptingPlayerName
             };
 
             try {
-                const response = await fetch(webhookURL, { 
+                const response = await fetch(webhookURL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload) 
+                    body: JSON.stringify(payload)
                 });
 
-                if(response.ok){
-                    // Make.com succeeded, meaning the user passed the whitelist check
-                    alert(`Bounty "${targetPlayer}" accepted! The global list will update shortly.`);
-                    btn.textContent = "ACCEPTED (Awaiting Global Status)"; 
-                    
-                    // Re-run status check after delay to confirm status from Google Sheet
-                    setTimeout(initializeBountyBoard, 4000); 
-
+                if (response.ok) {
+                    alert(`Bounty "${targetPlayer}" accepted!`);
+                    setTimeout(initializeBountyBoard, 4000);
                 } else {
-                    // Make.com failed/rejected the request (e.g., due to whitelist filter)
-                    console.error("Webhook POST failed. Access Denied likely due to whitelist check.", response.status, response.statusText);
-                    
-                    // 💥 STEP 1: Alert the user
-                    alert("🚨 ACCESS DENIED: Your In-Game Name is not whitelisted. You must be whitelisted to accept bounties. Returning to login screen.");
-                    
-                    // 💥 STEP 2: Clear the current session
+                    // 🚨 ACCESS DENIED HANDLING HERE
+                    alert("Access Denied. You are not on the whitelist.");
                     sessionStorage.removeItem(USER_NAME_KEY);
-                    
-                    // 💥 STEP 3: Send them back to the login screen
-                    location.reload(); 
+                    playerSetupSectionWrapper.style.display = 'block';
+                    bountySection.style.display = 'none';
                 }
-            } catch(err){
+            } catch (err) {
                 console.error(err);
-                alert("Error sending webhook. Check console for details.");
-                
-                // Re-enable the button since the acceptance didn't confirm
+                alert("Error communicating with server. Please try again.");
                 btn.disabled = false;
                 btn.textContent = "Accept Bounty";
-                btn.classList.remove('accepted-bounty-btn'); 
+                btn.classList.remove('accepted-bounty-btn');
             }
         });
     });
