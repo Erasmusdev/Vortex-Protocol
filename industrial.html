@@ -11,7 +11,15 @@
     <!-- ===== NAVBAR ===== -->
     <header class="navbar">
         <div class="navbar-left">
-            <a href="index.html" class="logo">Vortex Protocol</a>
+
+
+            <!-- Hamburger button for mobile -->
+            <button class="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
             <nav>
                 <ul>
                     <li><a href="index.html">HOME</a></li>
@@ -20,41 +28,43 @@
                     <li><a href="#">SCIENCE</a></li>
                     <li><a href="#">DEFENSE</a></li>
                     <li><a href="missionboard.html">MISSION BOARD</a></li>
+                    <!-- Mobile social icons -->
+                    <li class="mobile-socials">
+                        <a href="https://discord.gg/DuWnazV4" class="icon-link"><img src="./Images/Discord.png" alt="Discord Icon"><span>DISCORD</span></a>
+                        <a href="#" class="icon-link"><img src="./Images/Youtube.png" alt="YouTube Icon"><span>YOUTUBE</span></a>
+                        <a href="https://www.twitch.tv/flockersdesign" class="icon-link"><img src="./Images/Twitch.png" alt="Twitch Icon"><span>TWITCH</span></a>
+                    </li>
                 </ul>
             </nav>
         </div>
 
-
-        </div>
+        <!-- Desktop social icons -->
         <div class="navbar-right">
-        <a href="https://discord.gg/DuWnazV4" class="icon-link"><img src="./Images/Discord.png" alt="Discord Icon"><span>DISCORD</span></a>
-        <a href="#" class="icon-link"><img src="./Images/Youtube.png" alt="YouTube Icon"><span>YOUTUBE</span></a>
-        <a href="https://www.twitch.tv/flockersdesign" class="icon-link"><img src="./Images/Twitch.png" alt="Twitch Icon"><span>TWITCH</span></a>
-    </div>
-
+            <a href="https://discord.gg/DuWnazV4" class="icon-link"><img src="./Images/Discord.png" alt="Discord Icon"><span>DISCORD</span></a>
+            <a href="#" class="icon-link"><img src="./Images/Youtube.png" alt="YouTube Icon"><span>YOUTUBE</span></a>
+            <a href="https://www.twitch.tv/flockersdesign" class="icon-link"><img src="./Images/Twitch.png" alt="Twitch Icon"><span>TWITCH</span></a>
+        </div>
     </header>
 
-        <!-- Hero Section with Video Background -->
-        <section class="hero-section">
-            <video autoplay muted loop playsinline id="bg-video">
-                <source src="./movies/IndustrialDivision.mp4" type="video/mp4">
-                Your browser does not support HTML5 video.
-            </video>
-            <div class="hero-overlay"></div>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <video autoplay muted loop playsinline id="bg-video">
+            <source src="./movies/IndustrialDivision.mp4" type="video/mp4">
+            Your browser does not support HTML5 video.
+        </video>
+        <div class="hero-overlay"></div>
 
-            <div class="hero-content">
-                <div class="main-logo-container">
-                    <p class="large-brand-name">INDUSTRIAL</p>
-                        <p>PERFORMANCE. VISUALS. PRO-GRADE.</p>
-                    </div>
-                </div>
+        <div class="hero-content">
+            <div class="main-logo-container">
+                <p class="large-brand-name">INDUSTRIAL</p>
+                <p>PERFORMANCE. VISUALS. PRO-GRADE.</p>
             </div>
-        </section>
+        </div>
+    </section>
 
-    <!-- ===== CORE PROTOCOLS ===== -->
+    <!-- Core Protocols Section -->
     <section class="content-feed-container">
-        
-        <!-- GREEN BANNER -->
+
         <div class="full-width-banner">
             <div class="banner-content">
                 <p>SUPPLY THE CORE. DRIVE THE ECONOMY.</p>
@@ -72,7 +82,7 @@
             <div class="card-body">
                 <p class="card-tagline">QUANTANIUM SECURED — HIGH-RISK, HIGH-YIELD.</p>
                 <p class="card-main-text">
-                    The backbone of VORTEX PROTOCAL’s industrial power — extracting volatile minerals like <strong>Quantanium</strong>, Beryl, and Laranite from contested asteroid belts. Crews deploy <strong>Prospectors</strong> and <strong>MOLEs</strong> under tight defense protocols, ensuring total manifest integrity. 
+                    The backbone of VORTEX PROTOCOL’s industrial power — extracting volatile minerals like <strong>Quantanium</strong>, Beryl, and Laranite from contested asteroid belts. Crews deploy <strong>Prospectors</strong> and <strong>MOLEs</strong> under tight defense protocols, ensuring total manifest integrity. 
                 </p>
                 <p class="card-sub-text">
                     <strong>MINING ENGINEERS REQUIRED:</strong> Certification for the RSI Orion and volatile handling mandatory.
@@ -117,16 +127,11 @@
             </div>
         </div>
 
-                <div class="card-header">
-                    <img src="./Images/Patches/Mining-Operation.png" alt="Industrial Icon" class="card-icon">
-                    <img src="./Images/Patches/Salvage-recovery.png" alt="Industrial Icon" class="card-icon">
-                    <img src="./Images/Patches/refining-enginering.png" alt="Industrial Icon" class="card-icon">
 
-                </div>
 
         <!-- FOOTER CTA -->
         <div class="section-footer-cta">
-            <p>Ready to forge the industrial core of VORTEX PROTOCAL?</p>
+            <p>Ready to forge the industrial core of VORTEX PROTOCOL?</p>
             <div class="footer-links">
                 <a href="#" class="social-icon"><img src="./Images/Youtube.png" alt="YouTube"></a>
                 <a href="#" class="social-icon"><img src="./Images/Discord.png" alt="Discord"></a>
@@ -135,5 +140,15 @@
         </div>
     </section>
 
+    <!-- JS for Hamburger Menu -->
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.querySelector('.navbar-left nav');
+
+        hamburger.addEventListener('click', () => {
+            nav.classList.toggle('active');
+            hamburger.classList.toggle('open');
+        });
+    </script>
 </body>
 </html>
