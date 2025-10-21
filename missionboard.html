@@ -8,19 +8,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-<header class="navbar">
-  <div class="navbar-left">
-    <a href="index.html" class="logo">VORTEX MISSIONS</a>
-    <nav>
-      <ul>
-        <li><a href="index.html">HOME</a></li>
-        <li><a href="#">INDUSTRIAL</a></li>
-        <li><a href="#">LOGISTICS</a></li>
-        <li><a href="#">SCIENCE</a></li>
-        <li><a href="#">DEFENSE</a></li>
-      </ul>
-    </nav>
-  </div>
+    <!-- ===== NAVBAR ===== -->
+    <header class="navbar">
+        <div class="navbar-left">
+            <a href="index.html" class="logo">Vortex Protocol</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="industrial.html">INDUSTRIAL</a></li>
+                    <li><a href="#">LOGISTICS</a></li>
+                    <li><a href="#">SCIENCE</a></li>
+                    <li><a href="#">DEFENSE</a></li>
+                    <li><a href="missionboard.html">MISSION BOARD</a></li>
+                </ul>
+            </nav>
+        </div>
+        
   <div class="navbar-right">
     <a href="https://discord.gg/DuWnazV4" class="icon-link"><img src="./Images/Discord.png" alt="Discord Icon"><span>DISCORD</span></a>
     <a href="#" class="icon-link"><img src="./Images/Youtube.png" alt="YouTube Icon"><span>YOUTUBE</span></a>
@@ -48,10 +51,9 @@
     <button class="mission-filter-btn" data-filter="mining">Mining</button>
     <button class="mission-filter-btn" data-filter="salvage">Salvage</button>
     <button class="mission-filter-btn" data-filter="exploration">Exploration</button>
-    <button class="mission-filter-btn" data-filter="resource">Resource Gathering</button>
   </div>
 
-  <!-- Example mission cards -->
+  <!-- BOUNTY'S-->
   <div class="large-content-card" data-mission-type="bounty">
     <div class="card-header-icon">
       <img src="./Images/Patches/Salvage-recovery.png" alt="Mission Icon" class="card-large-icon" />
@@ -63,6 +65,9 @@
       <button class="accept-mission styled-button" data-mission="Starfire_X">Accept Mission</button>
     </div>
   </div>
+  
+
+<!-- MINING-->
 
   <div class="large-content-card" data-mission-type="mining">
     <div class="card-header-icon">
@@ -76,6 +81,9 @@
     </div>
   </div>
 
+
+<!-- SALVAGE-->
+
   <div class="large-content-card" data-mission-type="salvage">
     <div class="card-header-icon">
       <img src="./Images/Patches/Salvage-recovery.png" alt="Salvage Icon" class="card-large-icon" />
@@ -87,6 +95,21 @@
       <button class="accept-mission styled-button" data-mission="Derelict Wreck">Accept Mission</button>
     </div>
   </div>
+
+    <div class="large-content-card" data-mission-type="salvage">
+    <div class="card-header-icon">
+      <img src="./Images/Patches/Salvage-recovery.png" alt="Salvage Icon" class="card-large-icon" />
+      <h2>Polaris Wreck</h2>
+    </div>
+    <div class="card-body">
+      <p class="card-tagline">Reward: 150.000 UEC</p>
+      <p class="card-main-text">Salvage the Polaris near Stanton.</p>
+      <button class="accept-mission styled-button" data-mission="Derelict Wreck">Accept Mission</button>
+    </div>
+  </div>
+
+
+<!-- EXPLORATION-->
 
   <div class="large-content-card" data-mission-type="exploration">
     <div class="card-header-icon">
@@ -100,10 +123,10 @@
     </div>
   </div>
 
-    <div class="large-content-card" data-mission-type="resource">
+    <div class="large-content-card" data-mission-type="exploration">
     <div class="card-header-icon">
       <img src="./Images/Patches/Exploration.png" alt="Exploration Icon" class="card-large-icon" />
-      <h2>Unknown Planet Scan</h2>
+      <h2>System Scan</h2>
     </div>
     <div class="card-body">
       <p class="card-tagline">Reward: 60.000 UEC</p>
@@ -111,6 +134,7 @@
       <button class="accept-mission styled-button" data-mission="Unknown Planet Scan">Accept Mission</button>
     </div>
   </div>
+
 </section>
 
 <script>
