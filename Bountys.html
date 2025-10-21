@@ -96,20 +96,18 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     // --- CONFIGURATION ---
     // 1. CSV Data URL from your Google Sheet
-    const CSV_DATA_URL = 'https://docs.google.com/sheets/d/11Z1mGOzrpVnKhNV-hnOIJmrWAGl5DeGLnEn5gMlsriE/gviz/tq?tqx=out:csv&gid=0'; 
+    // 💥 FIX: CHANGED URL FORMAT from /gviz/tq to /export?format=csv to fix 404/CORS errors.
+    // ⚠️ IMPORTANT: Ensure your Google Sheet (gid=0, Blad1) is published to the web!
+    const CSV_DATA_URL = 'https://docs.google.com/spreadsheets/d/11Z1mGOzrpVnKhNV-hnOIJmrWAGl5DeGLnEn5gMlsriE/export?format=csv&gid=0'; 
     
     // 2. Your existing Make.com Webhook URL (for ACCEPTING bounties)
     const webhookURL = 'https://hook.eu2.make.com/y25idqg0rqvbj73jyt4udw7o71kal1b4'; 
 
     // --- ELEMENT REFERENCES ---
     const saveBtn = document.getElementById('savePlayer');
-    // **NEW INPUT REFERENCE**
     const playerNameInput = document.getElementById('playerNameInput'); 
-    
     const bountySection = document.getElementById('bounty-section');
     const playerSetupSectionWrapper = document.getElementById('player-setup-section-wrapper'); 
-    
-    // **KEY: Storing the In-Game Name in session storage**
     const USER_NAME_KEY = 'PlayerInGameName'; 
 
     // ----------------------------------------------------
@@ -117,10 +115,18 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // ----------------------------------------------------
     async function applyGlobalStatus() {
         const bountyStatusMap = {}; 
+        // Regex remains correct for parsing standard CSV structure
         const CSV_SPLIT_REGEX = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/; 
 
         try {
+            // This fetch now uses the fixed URL
             const response = await fetch(CSV_DATA_URL);
+            
+            // If the response is not OK (e.g., still a 404/permission issue), throw an error
+            if (!response.ok) {
+                 throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
             const csvText = await response.text();
             
             const lines = csvText.trim().split('\n');
@@ -151,6 +157,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
 
         } catch (error) {
+            // This error handler will now catch fetch failures more reliably
             console.error("Failed to fetch or parse global bounty list from Google Sheets. Check Publish to Web settings.", error);
         }
 
@@ -201,15 +208,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
     
     initializeBountyBoard();
     
-    // --- SAVE BUTTON LISTENER ---
+    // --- SAVE BUTTON LISTENER (Simple session save - security is in Make.com) ---
     saveBtn.addEventListener('click', () => {
-        // Get In-Game Name
         const playerName = playerNameInput.value.trim(); 
 
-        // Validation: In-Game Name is mandatory
         if(!playerName) return alert("Your In-Game Name is required for Secure Access.");
         
-        // Save to session storage
         sessionStorage.setItem(USER_NAME_KEY, playerName); 
         
         playerSetupSectionWrapper.style.display = 'none'; 
@@ -220,7 +224,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // --- MAKE WEBHOOK POST (Accept Bounty) ---
     document.querySelectorAll('.accept-bounty').forEach(btn => {
         btn.addEventListener('click', async () => {
-            // FETCH STORED IN-GAME NAME
             const acceptingPlayerName = sessionStorage.getItem(USER_NAME_KEY); 
             
             const targetCard = btn.closest('.large-content-card'); 
@@ -241,14 +244,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
             // Payload structure:
             const payload = {
                 bounty: targetPlayer, 
-                // This is the player name logged in Column B of the Bounty Tracker
                 player: acceptingPlayerName, 
                 reward: rewardText, 
                 timestamp: new Date().toISOString(),
                 status: "ACCEPTED", 
-                // CRITICAL: This variable carries the In-Game Name (e.g., FlockersDesign)
-                // Your Make.com Whitelist check MUST use this variable
-                // to search your Whitelist sheet.
+                // CRITICAL: This is the name used for the back-end whitelist check
                 UserwhitelistId: acceptingPlayerName 
             };
 
@@ -267,7 +267,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
                 } else {
                     console.error("Webhook POST failed", response.status, response.statusText);
-                    alert("Failed to accept bounty. Check console for errors. Access might be restricted."); 
+                    // This alert is where the Make.com security check failure should fall.
+                    alert("Failed to accept bounty. Access Denied (Whitelist check may have failed) or Webhook Issue."); 
                     btn.disabled = false;
                     btn.textContent = "Accept Bounty";
                     btn.classList.remove('accepted-bounty-btn'); 
