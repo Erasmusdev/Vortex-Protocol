@@ -1,125 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VORTEX PROTOCOL</title>
-    <link rel="stylesheet" href="./CSS/Style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VORTEX PROTOCOL</title>
+  <link rel="stylesheet" href="./CSS/Style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet" />
 </head>
 <body>
 <header class="navbar">
-    <div class="navbar-left">
-      <!--   <a href="index.html" class="logo">VORTEX PROTOCOL</a> -->
+  <div class="navbar-left">
+    <button class="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav>
+      <ul>
+        <li><a href="index.html">HOME</a></li>
+        <li><a href="industrial.html">INDUSTRIAL</a></li>
+        <li><a href="#">LOGISTICS</a></li>
+        <li><a href="#">SCIENCE</a></li>
+        <li><a href="#">DEFENSE</a></li>
+        <li><a href="missionboard.html">MISSION BOARD</a></li>
 
-        <!-- Hamburger button -->
-        <button class="hamburger" aria-label="Toggle menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
+        <!-- Mobile-only socials -->
+        <li class="mobile-socials">
+          <a href="https://discord.gg/DuWnazV4" class="icon-link"><img src="./Images/Discord.png" alt="Discord"><span>DISCORD</span></a>
+          <a href="#" class="icon-link"><img src="./Images/Youtube.png" alt="YouTube"><span>YOUTUBE</span></a>
+          <a href="https://www.twitch.tv/flockersdesign" class="icon-link"><img src="./Images/Twitch.png" alt="Twitch"><span>TWITCH</span></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 
-        <nav>
-            <ul>
-                <li><a href="index.html">HOME</a></li>
-                <li><a href="industrial.html">INDUSTRIAL</a></li>
-                <li><a href="#">LOGISTICS</a></li>
-                <li><a href="#">SCIENCE</a></li>
-                <li><a href="#">DEFENSE</a></li>
-                <li><a href="missionboard.html">MISSION BOARD</a></li>
-
-                <!-- Mobile only social icons -->
-                <li class="mobile-socials">
-                    <a href="https://discord.gg/DuWnazV4" class="icon-link"><img src="./Images/Discord.png" alt="Discord Icon"><span>DISCORD</span></a>
-                    <a href="#" class="icon-link"><img src="./Images/Youtube.png" alt="YouTube Icon"><span>YOUTUBE</span></a>
-                    <a href="https://www.twitch.tv/flockersdesign" class="icon-link"><img src="./Images/Twitch.png" alt="Twitch Icon"><span>TWITCH</span></a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-
-    <!-- Desktop social icons (right side) -->
-    <div class="navbar-right">
-        <a href="https://discord.gg/DuWnazV4" class="icon-link"><img src="./Images/Discord.png" alt="Discord Icon"><span>DISCORD</span></a>
-        <a href="#" class="icon-link"><img src="./Images/Youtube.png" alt="YouTube Icon"><span>YOUTUBE</span></a>
-        <a href="https://www.twitch.tv/flockersdesign" class="icon-link"><img src="./Images/Twitch.png" alt="Twitch Icon"><span>TWITCH</span></a>
-    </div>
+  <!-- Desktop-only socials -->
+  <div class="navbar-right">
+    <a href="https://discord.gg/DuWnazV4" class="icon-link"><img src="./Images/Discord.png" alt="Discord"><span>DISCORD</span></a>
+    <a href="#" class="icon-link"><img src="./Images/Youtube.png" alt="YouTube"><span>YOUTUBE</span></a>
+    <a href="https://www.twitch.tv/flockersdesign" class="icon-link"><img src="./Images/Twitch.png" alt="Twitch"><span>TWITCH</span></a>
+  </div>
 </header>
 
 <main>
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <video autoplay muted loop playsinline id="bg-video">
-            <source src="./movies/BGAnim.mp4" type="video/mp4">
-            Your browser does not support HTML5 video.
-        </video>
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <div class="main-logo-container">
-                <p class="large-brand-name">VORTEX PROTOCOL</p>
-                <p class="tagline">BY FLOCKERS DESIGN</p>
-                <div class="promo-text-box">
-                    <p>PERFORMANCE. VISUALS. PRO-GRADE.,<br>https://robertsspaceindustries.com/en/orgs/VXP</p>
-                </div>
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <video autoplay muted loop playsinline id="bg-video">
+      <source src="./movies/BGAnim.mp4" type="video/mp4" />
+      Your browser does not support HTML5 video.
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="large-brand-name">VORTEX PROTOCOL</p>
+      <p class="tagline">BY FLOCKERS DESIGN</p>
+      <div class="promo-text-box">
+        <p>PERFORMANCE. VISUALS. PRO-GRADE.<br />https://robertsspaceindustries.com/en/orgs/VXP</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUR FLEET Section -->
+  <section class="fleet-section">
+    <h2>OUR FLEET</h2>
+    <div class="fleet-grid">
+      <div class="fleet-card">
+        <img src="./Images/Renders/Vulture.webp" alt="Mining Ship" />
+        <h3>INDUSTRIAL CORE</h3>
+        <p>Specialized in mining, refining, and large-scale resource logistics operations.</p>
+      </div>
+
+      <div class="fleet-card">
+        <img src="./Images/Renders/Carrack.webp" alt="Explorer Ship" />
+        <h3>EXPLORATION WING</h3>
+        <p>Equipped for deep-space reconnaissance, jump point mapping, and scientific discovery.</p>
+      </div>
+
+      <div class="fleet-card">
+        <img src="./Images/Renders/Polaris.webp" alt="Defense Ship" />
+        <h3>DEFENSE COMMAND</h3>
+        <p>Rapid-response strike groups and tactical escorts protecting critical assets.</p>
+      </div>
+
+      <div class="fleet-card">
+        <img src="./Images/Renders/Caterpillar.webp" alt="Cargo Ship" />
+        <h3>LOGISTICS NETWORK</h3>
+        <p>Transporting high-value cargo across systems with precision and security.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divisions Section -->
+  <section class="divisions-section">
+    <h2 class="section-title">OUR DIVISIONS</h2>
+    <div class="divisions-grid">
+      <a href="#" class="division-card industrial-card">
+        <div class="card-default-content"><h3>INDUSTRIAL</h3></div>
+        <div class="hover-content"><p>MINING, SALVAGE, & REFINERY OPERATIONS. CORE RESOURCE EXTRACTION AND PROCESSING.</p></div>
+      </a>
+      <a href="#" class="division-card logistics-card">
+        <div class="card-default-content"><h3>LOGISTICS</h3></div>
+        <div class="hover-content"><p>CARGO HAULING, TRADE ROUTES, & FLEET RE-SUPPLY. MOVING ASSETS ACROSS THE 'VERSE.</p></div>
+      </a>
+      <a href="#" class="division-card science-card">
+        <div class="card-default-content"><h3>SCIENCE</h3></div>
+        <div class="hover-content"><p>EXPLORATION, DATA COLLECTION, & JUMP POINT DISCOVERY. RESEARCH AND DEVELOPMENT.</p></div>
+      </a>
+      <a href="#" class="division-card defense-card">
+        <div class="card-default-content"><h3>DEFENSE</h3></div>
+        <div class="hover-content"><p>COMBAT ESCORTS, PATROL ROUTES, & PIRATE INTERDICTION. FLEET ASSET PROTECTION.</p></div>
+      </a>
+    </div>
+
+    <!-- Animated Patches -->
+    <div class="card-header">
+      <img src="./Images/Patches/LOGISTICS-DIVISION.png" alt="Logistics" class="card-icon" />
+      <img src="./Images/Patches/INDUSTRIAL-DIVISION.png" alt="Industrial" class="card-icon" />
+      <img src="./Images/Patches/DEFENSE-DIVISION.png" alt="Defense" class="card-icon" />
+      <img src="./Images/Patches/SCIENCE-DIVISION.png" alt="Science" class="card-icon" />
+      <img src="./Images/Patches/Mining-Operation.png" alt="Mining" class="card-icon" />
+      <img src="./Images/Patches/Salvage-recovery.png" alt="Salvage" class="card-icon" />
+      <img src="./Images/Patches/refining-enginering.png" alt="Refining" class="card-icon" />
+    </div>
+  </section>
+</main>
+
+        <!-- FOOTER CTA -->
+        <div class="section-footer-cta">
+            <p>Ready to forge the industrial core of VORTEX PROTOCOL?</p>
+            <div class="footer-links">
+                <a href="#" class="social-icon"><img src="./Images/Youtube.png" alt="YouTube"></a>
+                <a href="#" class="social-icon"><img src="./Images/Discord.png" alt="Discord"></a>
+                <a href="#" class="social-icon"><img src="./Images/Twitch.png" alt="Twitch"></a>
             </div>
         </div>
     </section>
 
-    <!-- Divisions Section -->
-    <section class="divisions-section">
-        <h2 class="section-title">OUR DIVISIONS</h2>
-        <div class="divisions-grid">
-            <a href="#" class="division-card industrial-card">
-                <div class="card-default-content"><h3>INDUSTRIAL</h3></div>
-                <div class="hover-content">
-                    <p>MINING, SALVAGE, & REFINERY OPERATIONS. CORE RESOURCE EXTRACTION AND PROCESSING.</p>
-
-                </div>
-            </a>
-            <a href="#" class="division-card logistics-card">
-                <div class="card-default-content"><h3>LOGISTICS</h3></div>
-                <div class="hover-content">
-                    <p>CARGO HAULING, TRADE ROUTES, & FLEET RE-SUPPLY. MOVING ASSETS ACROSS THE 'VERSE.</p>
-
-                </div>
-            </a>
-            <a href="#" class="division-card science-card">
-                <div class="card-default-content"><h3>SCIENCE</h3></div>
-                <div class="hover-content">
-                    <p>EXPLORATION, DATA COLLECTION, & JUMP POINT DISCOVERY. RESEARCH AND DEVELOPMENT.</p>
-
-                </div>
-            </a>
-            <a href="#" class="division-card defense-card">
-                <div class="card-default-content"><h3>DEFENSE</h3></div>
-                <div class="hover-content">
-                    <p>COMBAT ESCORTS, PATROL ROUTES, & PIRATE INTERDICTION. FLEET ASSET PROTECTION.</p>
-
-                </div>
-            </a>
-        </div>
-
-        <div class="card-header">
-            <img src="./Images/Patches/LOGISTICS-DIVISION.png" alt="Industrial Icon" class="card-icon">               
-            <img src="./Images/Patches/INDUSTRIAL-DIVISION.png" alt="Industrial Icon" class="card-icon">
-            <img src="./Images/Patches/DEFENSE-DIVISION.png" alt="Industrial Icon" class="card-icon">
-            <img src="./Images/Patches/SCIENCE-DIVISION.png" alt="Industrial Icon" class="card-icon">
-            <img src="./Images/Patches/Mining-Operation.png" alt="Industrial Icon" class="card-icon">
-            <img src="./Images/Patches/Salvage-recovery.png" alt="Industrial Icon" class="card-icon">
-            <img src="./Images/Patches/refining-enginering.png" alt="Industrial Icon" class="card-icon">
-        </div>
-    </section>
-</main>
-
-<!-- JS for Hamburger Menu -->
 <script>
-    const hamburger = document.querySelector('.hamburger');
-    const nav = document.querySelector('.navbar-left nav');
+  // Hamburger
+  const hamburger = document.querySelector('.hamburger');
+  const nav = document.querySelector('.navbar-left nav');
+  hamburger.addEventListener('click', () => {
+    nav.classList.toggle('active');
+    hamburger.classList.toggle('open');
+  });
 
-    hamburger.addEventListener('click', () => {
-        nav.classList.toggle('active');
-        hamburger.classList.toggle('open');
+  // Parallax tilt effect for fleet cards
+  document.querySelectorAll('.fleet-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      card.style.transform = `rotateY(${x / 25}deg) rotateX(${-y / 25}deg) scale(1.02)`;
     });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'rotateY(0) rotateX(0) scale(1)';
+    });
+  });
 </script>
 </body>
 </html>
