@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Bounty Board</title>
   <link rel="stylesheet" href="./CSS/bountyboard.css" />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet" />
@@ -105,27 +105,26 @@ document.addEventListener('DOMContentLoaded', () => {
   async function applyGlobalStatus() {
     const bountyStatusMap = {};
     const CSV_SPLIT_REGEX = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/;
-
     try {
       const response = await fetch(CSV_DATA_URL);
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const csvText = await response.text();
       const lines = csvText.trim().split('\n');
       if (lines.length <= 1) return;
-
       const cleanField = field => field.replace(/^"|"$/g, '').trim();
       const headers = lines[0].split(CSV_SPLIT_REGEX).map(cleanField);
       const bountyIdIndex = headers.indexOf('Bounty_ID');
       const statusIndex = headers.indexOf('Status');
-
+      if (bountyIdIndex === -1 || statusIndex === -1) return;
       for (let i = 1; i < lines.length; i++) {
         const columns = lines[i].split(CSV_SPLIT_REGEX);
-        const bountyId = columns[bountyIdIndex] ? cleanField(columns[bountyIdIndex]) : '';
-        const status = columns[statusIndex] ? cleanField(columns[statusIndex]).toUpperCase() : '';
+        if (columns.length <= Math.max(bountyIdIndex, statusIndex)) continue;
+        const bountyId = cleanField(columns[bountyIdIndex]);
+        const status = cleanField(columns[statusIndex]).toUpperCase();
         if (bountyId) bountyStatusMap[bountyId] = status;
       }
-    } catch (error) {
-      console.error("Failed to fetch bounty data", error);
+    } catch (err) {
+      console.error('Failed to fetch bounty data', err);
       return;
     }
 
@@ -133,13 +132,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetPlayerId = card.querySelector('h2').textContent.trim();
       const btn = card.querySelector('.accept-bounty');
       if (!btn) return;
-
       const status = bountyStatusMap[targetPlayerId] || 'NEW';
       if (status === 'ACCEPTED') {
         btn.disabled = true;
         btn.textContent = "ACCEPTED";
         btn.classList.add('accepted-bounty-btn');
-      } else if (['COMPLETED', 'CANCELLED', 'FAILED'].includes(status)) {
+      } else if (['COMPLETED','CANCELLED','FAILED'].includes(status)) {
         card.style.display = 'none';
       } else {
         btn.disabled = false;
@@ -161,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
       bountySection.style.display = 'none';
     }
   }
-
   initializeBountyBoard();
 
   saveBtn.addEventListener('click', () => {
@@ -171,6 +168,33 @@ document.addEventListener('DOMContentLoaded', () => {
     playerSetupSectionWrapper.style.display = 'none';
     bountySection.style.display = 'block';
   });
+
+  // Helper that evaluates webhook response to determine if it's a DENY
+  function isDeniedResponse(response, bodyText, parsedJson) {
+    // 1) non-OK HTTP status
+    if (!response.ok && response.status !== 200) return true;
+
+    // 2) JSON fields that indicate failure
+    if (parsedJson) {
+      // common patterns: { success: false }, { allowed: false }, { whitelisted: false }, { error: "..."}
+      if (parsedJson.success === false) return true;
+      if (parsedJson.allowed === false) return true;
+      if (parsedJson.whitelisted === false) return true;
+      if (typeof parsedJson.error === 'string' && parsedJson.error.length) return true;
+      if (typeof parsedJson.message === 'string' && /denied|not whitelisted|unauthor/i.test(parsedJson.message)) return true;
+      if (typeof parsedJson.status === 'string' && /denied|unauthor|forbidden/i.test(parsedJson.status)) return true;
+    }
+
+    // 3) fallback: raw text keyword checks
+    if (typeof bodyText === 'string') {
+      if (/denied|not whitelisted|not authorized|unauthorized|forbidden|access denied|not allowed/i.test(bodyText)) return true;
+      // some flows return plain "false" or "0" - treat them as denies
+      if (/^\s*(false|0)\s*$/i.test(bodyText)) return true;
+    }
+
+    // otherwise, treat as allowed
+    return false;
+  }
 
   document.querySelectorAll('.accept-bounty').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -185,12 +209,13 @@ document.addEventListener('DOMContentLoaded', () => {
         bountySection.style.display = 'none';
         return;
       }
-
       if (btn.disabled) return alert(`Bounty "${targetPlayer}" is already accepted!`);
 
+      // set a neutral "sending" state (don't show accepted yet)
       btn.disabled = true;
-      btn.textContent = "ACCEPTED (Sending Signal)";
-      btn.classList.add('accepted-bounty-btn');
+      const prevText = btn.textContent;
+      btn.textContent = "SENDING SIGNAL...";
+      btn.classList.add('sending-bounty-btn');
 
       const payload = {
         bounty: targetPlayer,
@@ -208,25 +233,43 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify(payload)
         });
 
+        // read text and try parse JSON
         const resultText = await response.text();
-        console.log("Webhook Response:", resultText);
+        console.log("Webhook status:", response.status);
+        console.log("Webhook body:", resultText);
 
-        if (!response.ok || /denied|unauthorized|whitelist/i.test(resultText)) {
+        let parsed = null;
+        try {
+          parsed = JSON.parse(resultText);
+        } catch (e) {
+          // not JSON, that's fine
+        }
+
+        // robust denial detection
+        if (isDeniedResponse(response, resultText, parsed)) {
+          // Access denied -> revert UI, clear session, redirect
           alert("ACCESS DENIED — You are not on the whitelist.");
           sessionStorage.removeItem(USER_NAME_KEY);
+          // optional: small delay so user sees the alert before redirecting
           window.location.href = REDIRECT_URL;
           return;
         }
 
-        alert(`Bounty "${targetPlayer}" accepted!`);
+        // Success path: mark accepted and refresh status
         btn.textContent = "ACCEPTED (Awaiting Global Status)";
+        btn.classList.remove('sending-bounty-btn');
+        btn.classList.add('accepted-bounty-btn');
+        // optionally keep disabled; global status will update soon
         setTimeout(initializeBountyBoard, 4000);
+        alert(`Bounty "${targetPlayer}" accepted!`);
 
       } catch (err) {
-        console.error(err);
+        console.error("Webhook error:", err);
         alert("Error communicating with server. Please try again.");
+        // revert UI
         btn.disabled = false;
-        btn.textContent = "Accept Bounty";
+        btn.textContent = prevText || "Accept Bounty";
+        btn.classList.remove('sending-bounty-btn');
         btn.classList.remove('accepted-bounty-btn');
       }
     });
